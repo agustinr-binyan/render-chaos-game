@@ -1,0 +1,2690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3ds Max - Render Simulator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #050608;
+            color: #d0d7de;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 16:9 Widescreen Auto-Scaling Viewport */
+        #game-viewport {
+            position: relative;
+            width: min(96vw, calc(96vh * (16 / 9)));
+            height: calc(min(96vw, calc(96vh * (16 / 9))) * (9 / 16));
+            background: #000 url('game-bg.jpg') no-repeat center center;
+            background-size: 100% 100%;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.95);
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        /* CRT Glass Screen Region - Bounded strictly to CRT Monitor Glass Area */
+        #crt-screen {
+            position: absolute;
+            top: 17.2%;
+            left: 26.2%;
+            width: 47.6%;
+            height: 59.0%;
+            overflow: hidden;
+            pointer-events: auto;
+        }
+
+        /* Scanline CRT FX - Fine 2px Lines, Strictly Inside Glass Screen */
+        .scanlines {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 2px;
+            pointer-events: none;
+            z-index: 800;
+        }
+
+        /* Dynamic Progress Bar - Centered on Corona Window Lower Area */
+        #render-progress-text {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 61.8%;
+            font-size: 11px;
+            font-weight: bold;
+            color: #ffffff;
+            font-family: monospace;
+            text-shadow: 1px 1px 3px #000;
+            z-index: 50;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        #render-progress-container {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 66.8%;
+            width: 54.0%;
+            height: 4.6%;
+            background: #111;
+            border: 1px solid #555;
+            border-radius: 2px;
+            overflow: hidden;
+            z-index: 50;
+        }
+
+        #render-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #1e88e5, #00e676);
+            transition: width 0.1s linear;
+        }
+
+        /* Taskbar Timer Clock */
+        #taskbar-clock {
+            position: absolute;
+            bottom: 3px;
+            right: 8px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 13px;
+            font-weight: 800;
+            color: #00e676;
+            background: #111827;
+            border: 1px solid #374151;
+            padding: 2px 7px;
+            border-radius: 3px;
+            z-index: 820;
+            box-shadow: 0 0 10px rgba(0, 230, 118, 0.5);
+            text-shadow: 0 0 6px rgba(0, 230, 118, 0.9);
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        #taskbar-clock.clock-orange {
+            color: #ff9800;
+            border-color: #ff9800;
+            box-shadow: 0 0 12px rgba(255, 152, 0, 0.7);
+            text-shadow: 0 0 8px rgba(255, 152, 0, 0.9);
+        }
+
+        #taskbar-clock.clock-red-flash {
+            color: #f44336;
+            border-color: #f44336;
+            animation: clockPulseRed 0.5s infinite alternate;
+        }
+
+        @keyframes clockPulseRed {
+            from {
+                box-shadow: 0 0 8px rgba(244, 67, 54, 0.6);
+                text-shadow: 0 0 4px rgba(244, 67, 54, 0.8);
+            }
+            to {
+                box-shadow: 0 0 20px rgba(244, 67, 54, 1.0);
+                text-shadow: 0 0 12px rgba(244, 67, 54, 1.0);
+            }
+        }
+
+        /* HUD Status Bar - Aligned directly inside the lower Yellow Monitor Bezel Area */
+        #hud-header {
+            position: absolute;
+            top: 78.2%;
+            left: 26.2%;
+            width: 47.6%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            font-weight: bold;
+            color: #ffffff;
+            background: rgba(18, 14, 10, 0.55);
+            padding: 4px 10px;
+            border-radius: 5px;
+            border: 2px solid #ff9800;
+            box-shadow: 0 0 14px rgba(255, 152, 0, 0.5), inset 0 0 8px rgba(255, 152, 0, 0.2);
+            z-index: 850;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .hud-badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 10px;
+            cursor: pointer;
+            border: none;
+            text-transform: uppercase;
+        }
+        .badge-lvl { background: #ff9800; color: #111; }
+        .badge-speed { background: #2e7d32; color: #a5d6a7; }
+        .badge-virus { background: #c62828; color: #ffcdd2; }
+        .badge-ctrl { background: #0288d1; color: #ffffff; }
+        .badge-ctrl:hover { background: #0277bd; }
+
+        /* Google Chat Stacking Area (Bottom Left Multi-Column) */
+        #chat-container {
+            position: absolute;
+            left: 8px;
+            bottom: 8px;
+            display: flex;
+            gap: 6px;
+            z-index: 500;
+            pointer-events: none;
+        }
+
+        .chat-column {
+            width: 200px;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 6px;
+            max-height: 260px;
+        }
+
+        .chat-card {
+            flex-shrink: 0;
+            pointer-events: auto;
+            background: #ffffff;
+            color: #202124;
+            border-radius: 5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            border: 1px solid #dadce0;
+            overflow: hidden;
+            animation: slideInLeft 0.25s ease-out;
+            position: relative;
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .chat-header {
+            background: #0f9d58;
+            color: white;
+            padding: 3px 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 9px;
+            font-weight: bold;
+        }
+
+        .chat-body {
+            padding: 6px 8px;
+            display: flex;
+            gap: 6px;
+            align-items: flex-start;
+        }
+
+        .chat-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #4285f4;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+
+        .chat-content {
+            flex-grow: 1;
+        }
+
+        .chat-sender {
+            font-size: 10px;
+            font-weight: 700;
+            color: #202124;
+        }
+
+        .chat-msg {
+            font-size: 10px;
+            color: #3c4043;
+            line-height: 1.25;
+            margin-top: 2px;
+        }
+
+        .chat-actions {
+            display: flex;
+            gap: 4px;
+            margin-top: 6px;
+        }
+
+        .chat-btn-accept {
+            background: #d93025;
+            color: white;
+            border: none;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: bold;
+            cursor: pointer;
+            flex-grow: 1;
+        }
+        .chat-btn-accept:hover { background: #b31412; }
+
+        .chat-btn-decline {
+            background: #f1f3f4;
+            color: #3c4043;
+            border: 1px solid #dadce0;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .chat-btn-decline:hover { background: #e8eaed; }
+
+        /* Generic Pop-up Windows (Viruses, RAM, Render Nodes, AntiVirus) */
+        .popup-window {
+            position: absolute;
+            width: 210px;
+            background: #252a36;
+            border: 1px solid #45536e;
+            border-radius: 5px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.8);
+            z-index: 400;
+            overflow: hidden;
+            animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .popup-virus {
+            background: #3a1010;
+            border-color: #a82424;
+        }
+        .popup-virus .popup-header {
+            background: #800d0d;
+            border-bottom-color: #a82424;
+        }
+
+        .popup-ram {
+            background: #380d28;
+            border-color: #b02a6b;
+        }
+        .popup-ram .popup-header {
+            background: #7b1fa2;
+            border-bottom-color: #b02a6b;
+        }
+
+        .popup-node {
+            background: #0d2838;
+            border-color: #0288d1;
+        }
+        .popup-node .popup-header {
+            background: #0277bd;
+            border-bottom-color: #0288d1;
+        }
+
+        .popup-antivirus {
+            background: #0d381e;
+            border-color: #00e676;
+        }
+        .popup-antivirus .popup-header {
+            background: #0f9d58;
+            border-bottom-color: #00e676;
+        }
+
+        .popup-center {
+            left: 50% !important;
+            top: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            z-index: 700 !important;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.7); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .popup-header {
+            background: #181c26;
+            padding: 4px 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: #e0e6ed;
+            border-bottom: 1px solid #34425a;
+        }
+
+        .close-x {
+            background: #e53935;
+            color: white;
+            width: 16px;
+            height: 16px;
+            border-radius: 2px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        .close-x:hover { background: #c62828; }
+
+        .popup-body {
+            padding: 10px;
+            font-size: 10px;
+            color: #e0e6ed;
+            text-align: center;
+        }
+
+        .popup-subtext {
+            font-size: 9px;
+            font-style: italic;
+            color: #ff8a80;
+            margin-top: 4px;
+            display: block;
+        }
+
+        .popup-btn {
+            margin-top: 8px;
+            background: #00897b;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 10px;
+            width: 100%;
+        }
+        .popup-btn:hover { background: #00695c; }
+
+        .popup-btn-danger {
+            background: #d32f2f;
+        }
+        .popup-btn-danger:hover { background: #b71c1c; }
+
+        /* Hidden Tavia Track My Hours Button */
+        #track-hours-btn {
+            position: absolute;
+            background: #2e7d32;
+            color: #ffffff;
+            border: 1px solid #a5d6a7;
+            padding: 5px 10px;
+            font-size: 10px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 0 12px rgba(46, 125, 50, 0.8);
+            z-index: 900;
+            animation: pulseGlow 1s infinite alternate;
+        }
+        @keyframes pulseGlow {
+            from { box-shadow: 0 0 5px #2e7d32; }
+            to { box-shadow: 0 0 15px #00e676; }
+        }
+
+        /* Windows Update Toast Notification (Bottom Right inside CRT screen) */
+        #update-toast {
+            position: absolute;
+            bottom: 24px;
+            right: 10px;
+            width: 200px;
+            background: #1c222e;
+            border: 1px solid #0078d4;
+            border-left: 4px solid #ff1744;
+            border-radius: 5px;
+            padding: 8px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.7);
+            z-index: 600;
+            display: none;
+        }
+
+        .toast-header {
+            font-size: 10px;
+            font-weight: bold;
+            color: #ff5252;
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .toast-body {
+            font-size: 10px;
+            color: #c5d1e0;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .timer-sec {
+            color: #ff1744;
+            font-weight: bold;
+        }
+
+        .toast-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn-snooze {
+            background: #0078d4;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 10px;
+            flex-grow: 1;
+        }
+
+        .btn-restart {
+            background: #333;
+            color: #aaa;
+            border: 1px solid #444;
+            padding: 4px 6px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 10px;
+        }
+
+        /* Pause Overlay */
+        #pause-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.65);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 998;
+            pointer-events: auto;
+        }
+
+        .pause-box {
+            background: #1c222e;
+            border: 2px solid #ff9800;
+            border-radius: 6px;
+            padding: 12px 24px;
+            color: #ff9800;
+            font-size: 16px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            box-shadow: 0 0 20px rgba(255, 152, 0, 0.5);
+        }
+
+        /* Overlay Game State Screens - Styled for Viewport & CRT bounds */
+        .overlay-screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(8, 10, 15, 0.82) url('start-bg.jpg') no-repeat center center;
+            background-size: 100% 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        /* Modal Popups for Game Over Screens (Bounded strictly inside CRT Screen Area) */
+        .crt-modal-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 995;
+        }
+
+        .modal-popup {
+            width: 88%;
+            max-height: 85%;
+            display: flex;
+            flex-direction: column;
+            border-radius: 6px;
+            overflow: hidden;
+            animation: modalPopIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+        }
+
+        @keyframes modalPopIn {
+            from { transform: scale(0.75); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* 1. 3ds Max / Notification Overflow / Malware Crash Popup */
+        .max-crash-popup {
+            background: #ffffff;
+            border: 2px solid #d32f2f;
+            color: #212121;
+        }
+
+        .max-crash-header {
+            background: linear-gradient(90deg, #d32f2f, #b71c1c);
+            color: #ffffff;
+            padding: 6px 10px;
+            font-size: 10px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .max-crash-body {
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+
+        .max-crash-main {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .max-crash-icon {
+            font-size: 30px;
+            line-height: 1;
+            color: #d32f2f;
+            flex-shrink: 0;
+        }
+
+        .max-crash-title {
+            font-size: 12px;
+            font-weight: 800;
+            color: #b71c1c;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .max-crash-desc {
+            font-size: 10px;
+            color: #37474f;
+            line-height: 1.35;
+        }
+
+        .max-crash-details {
+            background: #ffebee;
+            border: 1px solid #ffcdd2;
+            border-left: 3px solid #d32f2f;
+            padding: 6px 8px;
+            font-family: monospace;
+            font-size: 9px;
+            color: #b71c1c;
+            border-radius: 3px;
+            line-height: 1.35;
+        }
+
+        .btn-max-restart {
+            background: #d32f2f;
+            color: #ffffff;
+            border: none;
+            padding: 6px 14px;
+            font-weight: bold;
+            font-size: 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            align-self: flex-end;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: background 0.2s;
+            box-shadow: 0 3px 8px rgba(211, 47, 47, 0.4);
+        }
+        .btn-max-restart:hover {
+            background: #b71c1c;
+        }
+
+        /* 2. Windows Update Reboot Modal (Light Blue BSOD Theme) */
+        .win-update-popup {
+            background: #0078d4;
+            border: 2px solid #60cdff;
+            color: #ffffff;
+        }
+
+        .win-update-header {
+            background: #005a9e;
+            color: #ffffff;
+            padding: 6px 10px;
+            font-size: 10px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .win-update-body {
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+
+        .win-bsod-face {
+            font-size: 32px;
+            font-weight: 300;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .win-update-title {
+            font-size: 11px;
+            font-weight: 800;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .win-update-desc {
+            font-size: 10px;
+            color: #e0f2fe;
+            line-height: 1.35;
+        }
+
+        .win-update-details {
+            background: rgba(0, 0, 0, 0.22);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 6px 8px;
+            font-family: monospace;
+            font-size: 9px;
+            color: #f0f9ff;
+            border-radius: 3px;
+            line-height: 1.35;
+        }
+
+        .btn-win-restart {
+            background: #ffffff;
+            color: #0078d4;
+            border: none;
+            padding: 6px 14px;
+            font-weight: bold;
+            font-size: 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            align-self: flex-end;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+        }
+        .btn-win-restart:hover {
+            background: #e0f2fe;
+            color: #005a9e;
+        }
+
+        /* 3. Temporal Collapse Tavia Modal (Dark Violet Time Failure) */
+        .temporal-popup {
+            background: #1a0933;
+            border: 2px solid #a855f7;
+            color: #ffffff;
+        }
+
+        .temporal-header {
+            background: #4c1d95;
+            color: #ffffff;
+            padding: 6px 10px;
+            font-size: 10px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .temporal-body {
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+
+        .temporal-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: #c084fc;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .temporal-desc {
+            font-size: 10px;
+            color: #e9d5ff;
+            line-height: 1.35;
+        }
+
+        .temporal-details {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid #7e22ce;
+            padding: 6px 8px;
+            font-family: monospace;
+            font-size: 9px;
+            color: #f3e8ff;
+            border-radius: 3px;
+            line-height: 1.35;
+        }
+
+        .btn-temporal-restart {
+            background: #9333ea;
+            color: #ffffff;
+            border: none;
+            padding: 6px 14px;
+            font-weight: bold;
+            font-size: 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            align-self: flex-end;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+            box-shadow: 0 3px 8px rgba(147, 51, 234, 0.4);
+        }
+        .btn-temporal-restart:hover {
+            background: #7e22ce;
+        }
+
+        /* 4. Failed Deadline Modal */
+        .deadline-popup {
+            background: #2d0d0d;
+            border: 2px solid #f44336;
+            color: #ffffff;
+        }
+
+        .deadline-header {
+            background: #b71c1c;
+            color: #ffffff;
+            padding: 6px 10px;
+            font-size: 10px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .deadline-body {
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+
+        .deadline-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: #ff8a80;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .deadline-desc {
+            font-size: 10px;
+            color: #ffebee;
+            line-height: 1.35;
+        }
+
+        .deadline-details {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid #d32f2f;
+            padding: 6px 8px;
+            font-family: monospace;
+            font-size: 9px;
+            color: #ffcdd2;
+            border-radius: 3px;
+            line-height: 1.35;
+        }
+
+        .btn-deadline-restart {
+            background: #f44336;
+            color: #ffffff;
+            border: none;
+            padding: 6px 14px;
+            font-weight: bold;
+            font-size: 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            align-self: flex-end;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+            box-shadow: 0 3px 8px rgba(244, 67, 54, 0.4);
+        }
+        .btn-deadline-restart:hover {
+            background: #d32f2f;
+        }
+
+        /* Green Win Pop-up Screen Styling */
+        .win-success-popup {
+            background: #0d2818;
+            border: 2px solid #00e676;
+            color: #ffffff;
+            box-shadow: 0 0 35px rgba(0, 230, 118, 0.4);
+        }
+
+        .win-success-header {
+            background: linear-gradient(90deg, #0f9d58, #00e676);
+            color: #0d2818;
+            padding: 6px 10px;
+            font-size: 10px;
+            font-weight: 800;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .win-success-body {
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+
+        .win-success-main {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+
+        .win-success-icon {
+            font-size: 32px;
+            line-height: 1;
+            color: #00e676;
+            flex-shrink: 0;
+            text-shadow: 0 0 10px rgba(0, 230, 118, 0.6);
+        }
+
+        .win-success-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: #00e676;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0 8px rgba(0, 230, 118, 0.4);
+        }
+
+        .win-success-desc {
+            font-size: 10px;
+            color: #e8f5e9;
+            line-height: 1.4;
+        }
+
+        .win-success-details {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid #1b5e20;
+            border-left: 3px solid #00e676;
+            padding: 8px 10px;
+            font-family: monospace;
+            font-size: 9px;
+            color: #b9f6ca;
+            border-radius: 3px;
+            line-height: 1.4;
+        }
+
+        .btn-win-success-restart {
+            background: #00e676;
+            color: #0d2818;
+            border: none;
+            padding: 8px 16px;
+            font-weight: 800;
+            font-size: 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            align-self: flex-end;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+            box-shadow: 0 3px 12px rgba(0, 230, 118, 0.4);
+        }
+        .btn-win-success-restart:hover {
+            background: #69f0ae;
+            transform: translateY(-1px);
+        }
+
+        /* Align Start Button over the 3D Render Button in start-bg.jpg */
+        .crt-render-btn {
+            position: absolute;
+            top: 44.8%;
+            left: 42.5%;
+            width: 15.0%;
+            height: 12.5%;
+            background: transparent;
+            border: 2px solid transparent;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: all 0.15s ease;
+            z-index: 1005;
+        }
+
+        .crt-render-btn:hover {
+            background: rgba(255, 152, 0, 0.22);
+            border-color: #ffe082;
+            box-shadow: 0 0 30px rgba(255, 152, 0, 0.7);
+        }
+
+        h1 {
+            font-size: 36px;
+            color: #ff9800;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 15px rgba(255,152,0,0.4);
+        }
+
+        p.desc {
+            font-size: 13px;
+            color: #90a4ae;
+            max-width: 520px;
+            text-align: center;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-viewport">
+    <!-- CRT Display Overlay Layer -->
+    <div id="crt-screen">
+        <!-- Dynamic Progress Over Corona Window -->
+        <div id="render-progress-text">Render Progress: <span id="progress-val">0%</span></div>
+        <div id="render-progress-container">
+            <div id="render-progress-fill"></div>
+        </div>
+
+        <!-- Taskbar Deadline Clock Timer -->
+        <div id="taskbar-clock">02:30</div>
+
+        <!-- Google Chat Multi-Column Container (Bottom Left) -->
+        <div id="chat-container">
+            <div id="chat-stack-left" class="chat-column"></div>
+            <div id="chat-stack-right" class="chat-column"></div>
+        </div>
+
+        <!-- Windows Update Toast -->
+        <div id="update-toast">
+            <div class="toast-header">
+                <span>WINDOWS UPDATE</span>
+                <span class="timer-sec" id="update-timer">10s</span>
+            </div>
+            <div class="toast-body">
+                A critical update is ready. Restarting in <span class="timer-sec" id="update-timer-text">10</span>s.
+            </div>
+            <div class="toast-actions">
+                <button class="btn-snooze" onclick="snoozeUpdate()">Snooze Update</button>
+                <button class="btn-restart" onclick="triggerRestart()">Restart Now</button>
+            </div>
+        </div>
+
+        <!-- Popups Layer -->
+        <div id="popup-layer"></div>
+
+        <!-- Timesheet Minigame Modal -->
+        <div id="timesheet-modal" class="popup-window popup-center" style="display:none; width: 280px; z-index: 920; background: #1e2430; border: 2px solid #0f9d58; box-shadow: 0 0 25px rgba(15, 157, 88, 0.6);">
+            <div class="popup-header" style="background: #0f9d58; color: #fff;">
+                <span>📊 WEEKLY TIMESHEET (37.5 HRS)</span>
+                <div class="close-x" onclick="handleTimesheetDecline()">✕</div>
+            </div>
+            <div class="popup-body" style="padding: 10px; font-size: 10px; text-align: left;">
+                <div style="font-size: 9px; color: #a0aec0; margin-bottom: 8px; text-align: center;">
+                    Fill empty days (6.0 - 9.0 hrs/day). Total must equal <strong>37.50 hrs</strong>!
+                </div>
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 10px;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid #4a5568; color: #e2e8f0; text-align: left;">
+                            <th style="padding: 3px;">Day</th>
+                            <th style="padding: 3px; text-align: right;">Logged Hours</th>
+                        </tr>
+                    </thead>
+                    <tbody id="timesheet-table-body"></tbody>
+                </table>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 6px; background: #111827; border-radius: 4px; font-weight: bold; margin-bottom: 8px;">
+                    <span>TOTAL:</span>
+                    <span id="timesheet-live-total" style="color: #ff9800; font-size: 11px;">0.00 / 37.50 hrs</span>
+                </div>
+                <div id="timesheet-error-msg" style="color: #ff5252; font-size: 9px; margin-bottom: 6px; text-align: center; display: none;"></div>
+                <button class="popup-btn" style="background: #0f9d58;" onclick="submitTimesheet()">SUBMIT TIMESHEET</button>
+            </div>
+        </div>
+
+        <!-- Hidden Track Hours Button (Spawns during Tavia reverse time) -->
+        <button id="track-hours-btn" style="display:none;" onclick="openTimesheetMinigame()">TRACK MY HOURS</button>
+
+        <!-- Pause Overlay -->
+        <div id="pause-overlay">
+            <div class="pause-box">PAUSED</div>
+        </div>
+
+        <!-- Game Over CRT Modals Layer (Rendered strictly inside CRT Monitor Glass) -->
+        <div id="crt-modal-layer" class="crt-modal-overlay" style="display:none;">
+            
+            <!-- 3ds Max / Notification Overflow / Malware Crash Popup -->
+            <div id="max-crash-modal" class="modal-popup max-crash-popup" style="display:none;">
+                <div class="max-crash-header">
+                    <span id="max-crash-header-title">3DSMAX.EXE - APPLICATION ERROR</span>
+                    <span style="font-size:12px; cursor:pointer;" onclick="restartGame()">✕</span>
+                </div>
+                <div class="max-crash-body">
+                    <div class="max-crash-main">
+                        <div class="max-crash-icon">❌</div>
+                        <div>
+                            <div class="max-crash-title" id="max-crash-title-text">3DS MAX HAS CRASHED</div>
+                            <div class="max-crash-desc" id="max-fail-reason">3ds Max encountered an unhandled exception and was forced to terminate. Unsaved render buffer lost.</div>
+                        </div>
+                    </div>
+                    <div class="max-crash-details" id="max-crash-details-text">
+                        EXCEPTION_ACCESS_VIOLATION (0xC0000005)<br>
+                        PROCESS: 3dsmax.exe | MODULE: CoronaRender_Pipeline.dll<br>
+                        STATUS: UNHANDLED THREAD CRASH — RENDER TERMINATED
+                    </div>
+                    <button class="btn-max-restart" onclick="restartGame()">RESTART 3DS MAX</button>
+                </div>
+            </div>
+
+            <!-- Windows Update Reboot Popup (Light Blue BSOD Theme) -->
+            <div id="win-update-modal" class="modal-popup win-update-popup" style="display:none;">
+                <div class="win-update-header">
+                    <span>WINDOWS SYSTEM UPDATE</span>
+                    <span style="font-size:12px; cursor:pointer;" onclick="restartGame()">✕</span>
+                </div>
+                <div class="win-update-body">
+                    <div>
+                        <div class="win-bsod-face">:(</div>
+                        <div class="win-update-title">UPDATING WINDOWS: UNSAVED WORK DESTROYED</div>
+                        <div class="win-update-desc" id="win-fail-reason">Your OS detected peak productivity and initiated a critical reboot to update a bluetooth printer driver. Because you didn't save, your PC concluded your work was a collective hallucination and erased it from existence.</div>
+                    </div>
+                    <div class="win-update-details">
+                        STOP CODE: WINDOWS_UPDATE_FORCED_REBOOT<br>
+                        REBOOT PROGRESS: 100% COMPLETE<br>
+                        STATUS: ALL UNSAVED WORK AND RENDER PROGRESS LOST
+                    </div>
+                    <button class="btn-win-restart" onclick="restartGame()">REBOOT SYSTEM & RETRY</button>
+                </div>
+            </div>
+
+            <!-- Temporal Collapse Popup (Tavia Timesheet Failure) -->
+            <div id="temporal-modal" class="modal-popup temporal-popup" style="display:none;">
+                <div class="temporal-header">
+                    <span>TEMPORAL CONTINUUM ERROR</span>
+                    <span style="font-size:12px; cursor:pointer;" onclick="restartGame()">✕</span>
+                </div>
+                <div class="temporal-body">
+                    <div>
+                        <div class="temporal-title">TEMPORAL COLLAPSE!</div>
+                        <div class="temporal-desc" id="temporal-fail-reason">Because you failed to log your hours, the universe could not verify your physical existence. Accounting has confiscated your past, present and future.</div>
+                    </div>
+                    <div class="temporal-details">
+                        STATUS: UNACCOUNTED TIME PARADOX<br>
+                        TIMELINE: DELETED BY ACCOUNTING DEPARTMENT<br>
+                        PHYSICAL EXISTENCE: REVOKED
+                    </div>
+                    <button class="btn-temporal-restart" onclick="restartGame()">TRY AGAIN</button>
+                </div>
+            </div>
+
+            <!-- Failed Deadline Popup -->
+            <div id="deadline-modal" class="modal-popup deadline-popup" style="display:none;">
+                <div class="deadline-header">
+                    <span>CRITICAL DEADLINE FAILURE</span>
+                    <span style="font-size:12px; cursor:pointer;" onclick="restartGame()">✕</span>
+                </div>
+                <div class="deadline-body">
+                    <div>
+                        <div class="deadline-title">FAILED DEADLINE</div>
+                        <div class="deadline-desc" id="deadline-fail-reason">You missed the window. The client didn't just cancel the contract. They legally bought the rights to your name and rebranded you as "The Failure". Your desk was reduced to ashes.</div>
+                    </div>
+                    <div class="deadline-details">
+                        STATUS: CONTRACT TERMINATED<br>
+                        CLIENT ACTION: LEGAL NAME REBRAND EXECUTED<br>
+                        WORKSTATION STATUS: REDUCED TO ASHES
+                    </div>
+                    <button class="btn-deadline-restart" onclick="restartGame()">TRY AGAIN</button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Scanlines layer renders ON TOP of all in-screen elements inside CRT glass -->
+        <div class="scanlines"></div>
+    </div>
+
+    <!-- HUD Header - Aligned directly inside the lower Yellow Monitor Bezel Area -->
+    <div id="hud-header">
+        <div><span class="hud-badge badge-lvl" id="lvl-badge">LEVEL 0</span></div>
+        <div>SPEED: <span class="hud-badge badge-speed" id="speed-badge">100%</span></div>
+        <div>VIRUSES: <span class="hud-badge badge-virus" id="virus-badge">0</span></div>
+        <div>NODES: <strong id="node-count" style="color:#29b6f6;">0</strong></div>
+        <button class="hud-badge badge-ctrl" id="pause-btn" onclick="togglePause()">PAUSE</button>
+        <button class="hud-badge badge-ctrl" id="music-btn" onclick="toggleMusic()">MUSIC: ON</button>
+    </div>
+
+    <!-- Start Overlay (100% size of #game-viewport) -->
+    <div id="start-screen" class="overlay-screen">
+        <button class="crt-render-btn" onclick="startGame()" title="Click to Start Render"></button>
+    </div>
+
+    <!-- Win Overlay - Styled as Green 3ds Max / Windows Update Crash Popup -->
+    <div id="win-screen" class="overlay-screen" style="display:none; background-color: rgba(4, 20, 10, 0.92); background-image: none;">
+        <div class="modal-popup win-success-popup">
+            <div class="win-success-header">
+                <span>3DS MAX - RENDER SUCCESSFUL</span>
+                <span style="font-size:12px; cursor:pointer;" onclick="restartGame()">✕</span>
+            </div>
+            <div class="win-success-body">
+                <div class="win-success-main">
+                    <div class="win-success-icon">✔ 😊</div>
+                    <div>
+                        <div class="win-success-title">DELIVERABLE SENT! PEACE RESTORED</div>
+                        <div class="win-success-desc">
+                            The final pixel has locked into place. Upon opening the file, the Client has experienced a state of such pure corporate enlightenment that the image was approved in a nano-second. Your work is currently getting framed in the Client's executive suite.
+                        </div>
+                    </div>
+                </div>
+                <div class="win-success-details">
+                    STATUS: 100% RENDER COMPLETE & DELIVERED<br>
+                    CLIENT STATUS: PURE CORPORATE ENLIGHTENMENT ACHIEVED<br>
+                    FRAME LOCATION: EXECUTIVE SUITE
+                </div>
+                <button class="btn-win-success-restart" onclick="restartGame()">PLAY AGAIN</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Game State & Configuration
+    let gameState = 'MENU';
+    let isPaused = false;
+    let isMusicMuted = false;
+    let currentLevel = 0;
+
+    let renderProgress = 0;
+    const baseSpeed = 0.05; // 2000 ticks = 100s base
+    
+    let activeViruses = [];
+    let pendingVirusTimers = {};
+    
+    let ramScamSpeedPenalty = 0;
+    let ramScamSpeedTimer = 0;
+    let virusSpawnMultiplier = 1;
+    let virus3xTimer = 0;
+
+    let pauseTimer = 0;            // Render pause duration in ticks
+    let slow25Timer = 0;           // 25% speed penalty duration
+    let slow50Timer = 0;           // 50% speed penalty duration
+    let renderNodeBoost = 0;       // Permanent +10% per node
+    let ramUpgradesSpawned = 0;
+
+    // Speed Boost Timers & Permanent Flags
+    let dismissBoostTimer = 0;     // 10% speed boost for 3s (60 ticks) on chat dismiss
+    let archiveBoostTimer = 0;     // 25% speed boost for 10s (200 ticks) after archive/save actions
+    let maciejBoostTimer = 0;      // 5% speed boost for 5s (100 ticks) on Maciej "Thank you"
+    let permL3BoostActive = false; // 1.5x permanent boost after Level 3 revision comments
+    let l3RevisionTriggered = false; // Either Bec or Miranda or Bartosz revision, not both/all!
+    let level3ActionSpawned = false; // Guaranteed strict limit: strictly MAX 1 Level 3 action per game!
+    let hasTriggeredRevision = false; // Prevents Level 0/1 messages after Level 3 progress drain!
+
+    // Pop-up Positioning Grid Offset Counter & Antivirus Timer
+    let popupOffsetIndex = 0;
+    let antivirusTimer = 0;
+
+    // Level 0 Spawning Flags
+    let l0Msg1Spawned = false;
+    let l0Msg2Spawned = false;
+
+    // Tavia Reverse Time State
+    let isReverseTime = false;
+
+    // Spreadsheet Minigame Data
+    let timesheetDaysData = [];
+
+    // Comment Draining Catch-up Speed State (4x Speed = 1/4th of time)
+    let catchUpMultiplier = 1.0;
+
+    // Windows Update State
+    let isUpdateActive = false;
+    let updateCountdown = 10;
+    let updateIntervalId = null;
+
+    // Taskbar Deadline Timer State (150 seconds = 02:30)
+    let deadlineTimeSec = 150;
+    let deadlineTickCounter = 0;
+
+    // Event Timers (20 ticks/sec)
+    let gameIntervalId = null;
+    let chatTimer = 0;
+    let virusTimer = 0;
+    let ramTimer = 0;
+    let nodeTimer = 0;
+    let updateSpawnTimer = 0;
+
+    // Used Messages Tracking
+    const usedMessages = new Set();
+
+    // Chat Message Databases
+    const level0Jokes = [
+        { name: "Phoebe Duckworth", msg: "Hey hey heyy, hope your are feeling fabuloOoOOous today:D" },
+        { name: "Sarah Cope", msg: "Hello :D it’s sunny outside" },
+        { name: "Phoebe Duckworth", msg: "HelloOoO HellooOOooo" },
+        { name: "Eli Perret", msg: "Sup?" }
+    ];
+
+    const level1Jokes = [
+        { name: "Sarah Cope", msg: "Hey, any update on that image?" },
+        { name: "Andrei Dolnikov", msg: "Did you watch the latest NINJO video? IT'S AWESOME!" },
+        { name: "Andrei Dolnikov", msg: "Please watch the NINJO video…" },
+        { name: "Alexandre Castro", msg: "Your materials look amazing! What’s the secret?" },
+        { name: "Nataliia Tyarenko", msg: "Hi ^_^  ♥ How’s your day going?" }
+    ];
+
+    const level1Actions = [
+        { name: "Nadia Monte", msg: "Can I get a picture of your desk? :)", action: 'nadia_desk' },
+        { name: "Maciej Kozlowski", msg: "Looking great! Approved :)", action: 'maciej' }
+    ];
+
+    const level2Jokes = [
+        { name: "Sarah Cope", msg: "Hi. Do you think you can wrap this up in the next 11 seconds?" },
+        { name: "Matthew Charter", msg: "Color folder looking a little empty!" },
+        { name: "Matthew Charter", msg: "There’s a 2TB folder with your name on the S Drive…" },
+        { name: "Eli Perret", msg: "We need this ASAP, gotta go skiing in 10 min" },
+        { name: "Andrei Dolnikov", msg: "Did I mention the new video from NINJO?" },
+        { name: "Eli Perret", msg: "Clock’s ticking!" },
+        { name: "Eli Perret", msg: "YO! ARE YOU EVEN THERE?" }
+    ];
+
+    const level2Actions = [
+        { name: "Giada Filippetti", msg: "Can you upload your scene? :)", action: 'giada' },
+        { name: "Nadia Monte", msg: "Could you please archive your scene for me? :D", action: 'nadia_archive' },
+        { name: "Felipe Broering", msg: "You haven’t uploaded anything to Trello for the past 6 months", action: 'felipe' },
+        { name: "Arnon Rodrigues", msg: "I need a lamp from your scene, can you save it for me?", action: 'arnon' },
+        { name: "Tavia Hunter", msg: "I need you to update your timesheets", action: 'tavia_timesheets' }
+    ];
+
+    const level3Jokes = [
+        { name: "Bec Byrne", msg: "WE ARE GONNA LOSE THE CLIENT!" },
+        { name: "Cassidy Storms", msg: "HOW CAN YOU BE SO SLOW???" },
+        { name: "Bec Byrne", msg: "I NEED THAT IMAGE RIGHT NOW" },
+        { name: "Bec Byrne", msg: "PLEASE HURRY UP EVERYTHING IS ON FIRE!" },
+        { name: "Tavia Hunter", msg: "YOU ARE NOT TRACKING YOUR HOURS AGAIN!?" },
+        { name: "Tavia Hunter", msg: "IF YOU DON’T UPDATE YOUR TIMESHEETS RIGHT NOW I SWEAR I’M GONNA…" },
+        { name: "Marta Paterlini", msg: "MY WHOLE LIFE DEPENDS ON THIS DELIVERY" }
+    ];
+
+    const level3Actions = [
+        { name: "Miranda Romer", msg: "Sorry, but I actually have a few more comments", action: 'miranda' },
+        { name: "Bec Byrne", msg: "The client just sent a pdf with 200 comments", action: 'bec_comments' },
+        { name: "Bartosz Grochulski", msg: "You have been using the wrong model...", action: 'bartosz' }
+    ];
+
+    // Web Audio Sound System
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let musicIntervalId = null;
+    let startMusicIntervalId = null;
+    let musicStep = 0;
+
+    const leadNotes = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63, 293.66, 349.23, 440.00, 587.33];
+    const bassNotes = [130.81, 130.81, 164.81, 164.81, 146.83, 146.83, 174.61, 174.81];
+
+    function playSound(type) {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        if (type === 'chat') {
+            osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+            osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.08);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+        } else if (type === 'virus') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+            osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.2);
+            gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+        } else if (type === 'boost') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.25);
+            gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.25);
+        } else if (type === 'reset') {
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+            osc.frequency.linearRampToValueAtTime(80, audioCtx.currentTime + 0.4);
+            gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.4);
+        } else if (type === 'render_click') {
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.3);
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+        } else if (type === 'reverse') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+            osc.frequency.linearRampToValueAtTime(450, audioCtx.currentTime + 0.3);
+            gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+        } else if (type === 'pause') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+            osc.frequency.linearRampToValueAtTime(250, audioCtx.currentTime + 0.15);
+            gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.15);
+        } else if (type === 'resume') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(250, audioCtx.currentTime);
+            osc.frequency.linearRampToValueAtTime(500, audioCtx.currentTime + 0.15);
+            gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.15);
+        }
+    }
+
+    function playStartMusicTick() {
+        if (isMusicMuted || gameState !== 'MENU') return;
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        const notes = [220, 261.63, 329.63, 392];
+        const freq = notes[musicStep % notes.length];
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+        gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.3);
+        musicStep++;
+    }
+
+    function playMusicTick() {
+        if (isMusicMuted || gameState !== 'PLAYING' || isPaused) return;
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        const isDramatic = deadlineTimeSec <= 30;
+
+        // Lead Osc
+        const lead = audioCtx.createOscillator();
+        const leadGain = audioCtx.createGain();
+        lead.type = 'triangle';
+        lead.connect(leadGain);
+        leadGain.connect(audioCtx.destination);
+
+        let leadFreq = leadNotes[musicStep % leadNotes.length];
+        if (isReverseTime) {
+            leadFreq = leadNotes[(leadNotes.length - 1 - (musicStep % leadNotes.length))];
+        }
+
+        const pitchMultiplier = 1 + (renderProgress / 200);
+        lead.frequency.setValueAtTime(leadFreq * pitchMultiplier, audioCtx.currentTime);
+        leadGain.gain.setValueAtTime(isDramatic ? 0.035 : 0.02, audioCtx.currentTime);
+        leadGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+
+        lead.start();
+        lead.stop(audioCtx.currentTime + 0.15);
+
+        // Deep Harmonic Bass Osc (Subtle tension under 30s without annoying sirens)
+        const bass = audioCtx.createOscillator();
+        const bassGain = audioCtx.createGain();
+        bass.type = 'sawtooth';
+        bass.connect(bassGain);
+        bassGain.connect(audioCtx.destination);
+
+        let bassFreq = bassNotes[musicStep % bassNotes.length];
+        if (isReverseTime) {
+            bassFreq = bassNotes[(bassNotes.length - 1 - (musicStep % bassNotes.length))];
+        }
+
+        bass.frequency.setValueAtTime(bassFreq, audioCtx.currentTime);
+        bassGain.gain.setValueAtTime(isDramatic ? 0.045 : 0.025, audioCtx.currentTime);
+        bassGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.20);
+
+        bass.start();
+        bass.stop(audioCtx.currentTime + 0.20);
+
+        // Low Sub-Drone Pulse for cinematic tension under 30s
+        if (isDramatic) {
+            const drone = audioCtx.createOscillator();
+            const droneGain = audioCtx.createGain();
+            drone.type = 'sine';
+            drone.frequency.setValueAtTime(65.41, audioCtx.currentTime); // Deep C2 drone
+            droneGain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            droneGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.22);
+            drone.connect(droneGain);
+            droneGain.connect(audioCtx.destination);
+            drone.start();
+            drone.stop(audioCtx.currentTime + 0.22);
+        }
+
+        musicStep++;
+
+        // Smooth, stately increase in tempo under 30s
+        const nextDelay = isDramatic 
+            ? Math.max(120, 170 - (renderProgress * 0.5)) 
+            : Math.max(100, 240 - (renderProgress * 1.3));
+
+        clearInterval(musicIntervalId);
+        musicIntervalId = setInterval(playMusicTick, nextDelay);
+    }
+
+    function playWinMusic() {
+        if (isMusicMuted) return;
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+            setTimeout(() => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.4);
+            }, idx * 120);
+        });
+    }
+
+    function playLossMusic() {
+        if (isMusicMuted) return;
+        const notes = [400, 350, 300, 200];
+        notes.forEach((freq, idx) => {
+            setTimeout(() => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.35);
+            }, idx * 140);
+        });
+    }
+
+    function toggleMusic() {
+        isMusicMuted = !isMusicMuted;
+        document.getElementById('music-btn').innerText = isMusicMuted ? 'MUSIC: OFF' : 'MUSIC: ON';
+    }
+
+    function togglePause() {
+        if (gameState !== 'PLAYING') return;
+        isPaused = !isPaused;
+        
+        playSound(isPaused ? 'pause' : 'resume');
+        
+        const btn = document.getElementById('pause-btn');
+        btn.innerText = isPaused ? 'RESUME' : 'PAUSE';
+        btn.style.background = isPaused ? '#e53935' : '#0288d1';
+
+        const overlay = document.getElementById('pause-overlay');
+        overlay.style.display = isPaused ? 'flex' : 'none';
+    }
+
+    // Format MM:SS for Deadline Clock with Color Updates
+    function updateClockDisplay() {
+        const m = Math.floor(deadlineTimeSec / 60).toString().padStart(2, '0');
+        const s = (deadlineTimeSec % 60).toString().padStart(2, '0');
+        const el = document.getElementById('taskbar-clock');
+        if (!el) return;
+        
+        el.innerText = `${m}:${s}`;
+
+        if (deadlineTimeSec <= 30) {
+            el.className = 'clock-red-flash';
+        } else if (deadlineTimeSec <= 60) {
+            el.className = 'clock-orange';
+        } else {
+            el.className = '';
+        }
+    }
+
+    // Start Game
+    function startGame() {
+        playSound('render_click');
+        clearInterval(startMusicIntervalId);
+
+        gameState = 'PLAYING';
+        isPaused = false;
+        currentLevel = 0; // Starts at Level 0 for first 10%
+        renderProgress = 0;
+        
+        // Reset Virus pending timers
+        for (let tid in pendingVirusTimers) {
+            clearInterval(pendingVirusTimers[tid]);
+        }
+        pendingVirusTimers = {};
+        activeViruses = [];
+
+        ramScamSpeedPenalty = 0;
+        ramScamSpeedTimer = 0;
+        virusSpawnMultiplier = 1;
+        virus3xTimer = 0;
+
+        pauseTimer = 0;
+        slow25Timer = 0;
+        slow50Timer = 0;
+        renderNodeBoost = 0;
+        ramUpgradesSpawned = 0;
+
+        dismissBoostTimer = 0;
+        archiveBoostTimer = 0;
+        maciejBoostTimer = 0;
+        permL3BoostActive = false;
+        l3RevisionTriggered = false;
+        level3ActionSpawned = false; // Strictly reset Level 3 action counter
+        hasTriggeredRevision = false;
+
+        popupOffsetIndex = 0;
+        antivirusTimer = 0;
+
+        l0Msg1Spawned = false;
+        l0Msg2Spawned = false;
+
+        isReverseTime = false;
+        catchUpMultiplier = 1.0;
+
+        // Reset Deadline Timer (150 seconds = 02:30)
+        deadlineTimeSec = 150;
+        deadlineTickCounter = 0;
+        updateClockDisplay();
+
+        chatTimer = 0;
+        virusTimer = 0;
+        ramTimer = 0;
+        nodeTimer = 0;
+        updateSpawnTimer = 0;
+
+        usedMessages.clear();
+        clearPopups();
+        hideWindowsUpdate();
+        hideTrackHoursBtn();
+
+        document.getElementById('start-screen').style.display = 'none';
+        document.getElementById('crt-modal-layer').style.display = 'none';
+        document.getElementById('win-screen').style.display = 'none';
+        document.getElementById('pause-overlay').style.display = 'none';
+        document.getElementById('timesheet-modal').style.display = 'none';
+        document.getElementById('pause-btn').innerText = 'PAUSE';
+        document.getElementById('pause-btn').style.background = '#0288d1';
+
+        if (gameIntervalId) clearInterval(gameIntervalId);
+        gameIntervalId = setInterval(tick, 50); // 20 ticks per second
+
+        if (musicIntervalId) clearInterval(musicIntervalId);
+        musicIntervalId = setInterval(playMusicTick, 240);
+    }
+
+    // Main Game Tick
+    function tick() {
+        if (gameState !== 'PLAYING' || isPaused) return;
+
+        // Taskbar Deadline Clock decrement every 20 ticks (1 sec)
+        deadlineTickCounter++;
+        if (deadlineTickCounter >= 20) {
+            deadlineTickCounter = 0;
+            deadlineTimeSec--;
+            updateClockDisplay();
+
+            if (deadlineTimeSec <= 0) {
+                deadlineTimeSec = 0;
+                gameOver('You missed the window. The client didn\'t just cancel the contract. They legally bought the rights to your name and rebranded you as "The Failure". Your desk was reduced to ashes.', 'failed_deadline');
+                return;
+            }
+        }
+
+        // Level Thresholds Update
+        if (hasTriggeredRevision) {
+            if (renderProgress < 70) {
+                currentLevel = 2; // Level 2 logic when < 70% after revision!
+            } else {
+                currentLevel = 3;
+                if (catchUpMultiplier > 1.0 && renderProgress >= 70) {
+                    catchUpMultiplier = 1.0; // Reset catch-up speed once back at Level 3
+                }
+            }
+        } else {
+            if (renderProgress < 10) {
+                currentLevel = 0;
+            } else if (renderProgress < 35) {
+                currentLevel = 1;
+            } else if (renderProgress < 70) {
+                currentLevel = 2;
+            } else {
+                currentLevel = 3;
+                if (catchUpMultiplier > 1.0 && renderProgress >= 70) {
+                    catchUpMultiplier = 1.0;
+                }
+            }
+        }
+
+        // Timer Decrements
+        if (pauseTimer > 0) pauseTimer--;
+        if (slow25Timer > 0) slow25Timer--;
+        if (ramScamSpeedTimer > 0) {
+            ramScamSpeedTimer--;
+            if (ramScamSpeedTimer <= 0) ramScamSpeedPenalty = 0;
+        }
+        if (virus3xTimer > 0) {
+            virus3xTimer--;
+            if (virus3xTimer <= 0) virusSpawnMultiplier = 1;
+        }
+
+        if (dismissBoostTimer > 0) dismissBoostTimer--;
+        if (archiveBoostTimer > 0) archiveBoostTimer--;
+        if (maciejBoostTimer > 0) maciejBoostTimer--;
+
+        // Calculate Multipliers
+        const virusPenalty = activeViruses.length * 0.05; // 5% per active virus
+        const slow25Val = slow25Timer > 0 ? 0.25 : 0;
+        const slow50Val = slow50Timer > 0 ? 0.50 : 0;
+        const ramScamVal = ramScamSpeedPenalty;
+        const nodeBoostVal = renderNodeBoost;
+
+        const dismissBoostVal = dismissBoostTimer > 0 ? 0.10 : 0;
+        const archiveBoostVal = archiveBoostTimer > 0 ? 0.25 : 0;
+        const maciejBoostVal = maciejBoostTimer > 0 ? 0.05 : 0;
+        const permL3Val = permL3BoostActive ? 0.50 : 0;
+
+        let totalPenalty = virusPenalty + slow25Val + slow50Val + ramScamVal;
+        let bonusBoosts = nodeBoostVal + dismissBoostVal + archiveBoostVal + maciejBoostVal + permL3Val;
+
+        let multiplier = (1.0 - totalPenalty + bonusBoosts) * catchUpMultiplier;
+
+        // Check if Timesheet Minigame modal is open -> 75% render speed reduction!
+        const isTimesheetOpen = (document.getElementById('timesheet-modal') && document.getElementById('timesheet-modal').style.display === 'block');
+        if (isTimesheetOpen) {
+            multiplier *= 0.25; // 75% reduction in render speed!
+        }
+
+        // 80% Reduction if ANY Action Chat Message is active on screen
+        const activeActionCount = document.querySelectorAll('.chat-card[data-action="true"]').length;
+        if (activeActionCount > 0) {
+            multiplier *= 0.20; // 80% speed reduction!
+        }
+
+        if (pauseTimer > 0) multiplier = 0; // Paused by action message
+        multiplier = Math.max(0.0, multiplier);
+
+        // Progress Increment or Reverse Time Decrement (2x speed backwards)
+        if (isReverseTime) {
+            let revSpeed = baseSpeed * 2.0;
+            if (isTimesheetOpen) revSpeed *= 0.25;
+            renderProgress -= revSpeed;
+            if (renderProgress <= 0) {
+                renderProgress = 0;
+                gameOver("Because you failed to log your hours, the universe could not verify your physical existence. Accounting has confiscated your past, present and future.", "temporal_collapse");
+                return;
+            }
+        } else {
+            renderProgress += baseSpeed * multiplier;
+        }
+
+        // CHECK CRASH CONDITIONS
+        const totalActiveChats = document.querySelectorAll('.chat-card').length;
+        if (totalActiveChats >= 10) {
+            gameOver("You ignored so many messages that they merged into a single, hyper-intelligent monster. It consumed your hard drive, gained control of your mouse, and submitted a letter of resignation on your behalf.", "notification_overflow");
+            return;
+        }
+
+        if (activeViruses.length > 5) {
+            gameOver("The 5th Virus was the final straw. Under digital corporate law, five malware programs now constitute a voting majority on your C: drive. They just held an emergency board meeting and voted to liquidate your operating system.", "virus_overload");
+            return;
+        }
+
+        if (renderProgress >= 100) {
+            renderProgress = 100;
+            updateHUD(multiplier);
+            winGame();
+            return;
+        }
+
+        // Event Spawners
+        if (isTimesheetOpen || isReverseTime) {
+            chatTimer += 0.3; // Fewer messages/popups while timesheet or reverse time active!
+        } else {
+            chatTimer++;
+        }
+
+        virusTimer += virusSpawnMultiplier;
+        ramTimer++;
+        nodeTimer++;
+        antivirusTimer++;
+        updateSpawnTimer++;
+
+        // 1. Google Chats
+        if (currentLevel === 0) {
+            if (renderProgress >= 2.0 && renderProgress < 5.0 && !l0Msg1Spawned) {
+                spawnGoogleChat();
+                l0Msg1Spawned = true;
+            } else if (renderProgress >= 6.0 && renderProgress < 9.0 && !l0Msg2Spawned) {
+                spawnGoogleChat();
+                l0Msg2Spawned = true;
+            }
+        } else {
+            let chatThreshold = 120;
+            if (currentLevel === 1) chatThreshold = 120; // ~6s
+            else if (currentLevel === 2) chatThreshold = 80;  // ~4s
+            else if (currentLevel === 3) chatThreshold = 40;  // ~2s (DOUBLE RATE!)
+
+            if (chatTimer > chatThreshold) {
+                spawnGoogleChat();
+                chatTimer = 0;
+            }
+        }
+
+        // 2. Viruses (~15-18s base interval)
+        if (virusTimer > 320) {
+            spawnVirusPopup();
+            virusTimer = 0;
+        }
+
+        // 3. AntiVirus Bonus
+        if (activeViruses.length >= 2 && antivirusTimer > 350) {
+            spawnAntiVirusPopup();
+            antivirusTimer = 0;
+        }
+
+        // 4. RAM Scams (Max 2 per level threshold)
+        if (ramTimer > 500 && ramUpgradesSpawned < currentLevel * 2) {
+            spawnRamPopup();
+            ramUpgradesSpawned++;
+            ramTimer = 0;
+        }
+
+        // 5. Render Nodes (Super Rare 5s popup)
+        if (nodeTimer > 800) {
+            spawnRenderNodePopup();
+            nodeTimer = 0;
+        }
+
+        // 6. Windows Update Notification (~25s interval)
+        if (updateSpawnTimer > 500 && !isUpdateActive) {
+            triggerWindowsUpdate();
+            updateSpawnTimer = 0;
+        }
+
+        updateHUD(multiplier);
+    }
+
+    // Update HUD
+    function updateHUD(multiplier) {
+        document.getElementById('progress-val').innerText = `${Math.floor(renderProgress)}%`;
+        document.getElementById('render-progress-fill').style.width = `${renderProgress}%`;
+
+        document.getElementById('lvl-badge').innerText = `LEVEL ${currentLevel}`;
+
+        const badge = document.getElementById('speed-badge');
+        let speedPct = Math.round(multiplier * 100);
+        if (isReverseTime) speedPct = -200;
+        badge.innerText = `${speedPct}%`;
+
+        if (isReverseTime || multiplier < 1.0) {
+            badge.className = 'hud-badge badge-slow';
+        } else if (multiplier > 1.0) {
+            badge.className = 'hud-badge badge-boost';
+        } else {
+            badge.className = 'hud-badge badge-speed';
+        }
+
+        document.getElementById('virus-badge').innerText = activeViruses.length;
+        document.getElementById('node-count').innerText = Math.round(renderNodeBoost / 0.10);
+    }
+
+    // Google Chat Spawner with Level Pools & L3 Revision Exclusivity Limit (ONLY 1 SINGLE L3 ACTION PER GAME)
+    function spawnGoogleChat() {
+        let pool = [];
+        let actionPool = [];
+
+        if (currentLevel === 0) {
+            pool = level0Jokes;
+        } else if (currentLevel === 1) {
+            pool = level1Jokes;
+            actionPool = level1Actions;
+        } else if (currentLevel === 2) {
+            pool = level2Jokes;
+            actionPool = level2Actions;
+        } else {
+            pool = level3Jokes;
+            if (!l3RevisionTriggered && !level3ActionSpawned) {
+                actionPool = level3Actions;
+            } else {
+                actionPool = [];
+            }
+        }
+
+        // Filter out used messages
+        const availableJokes = pool.filter(m => !usedMessages.has(m.name + ':' + m.msg));
+        const availableActions = actionPool.filter(m => !usedMessages.has(m.name + ':' + m.msg));
+
+        if (availableJokes.length === 0 && availableActions.length === 0) return;
+
+        const isAction = availableActions.length > 0 && (Math.random() < 0.35 || availableJokes.length === 0);
+        const selectedData = isAction
+            ? availableActions[Math.floor(Math.random() * availableActions.length)]
+            : availableJokes[Math.floor(Math.random() * availableJokes.length)];
+
+        usedMessages.add(selectedData.name + ':' + selectedData.msg);
+
+        if (isAction && currentLevel === 3) {
+            level3ActionSpawned = true; // Lock so no other Level 3 action message can spawn this game
+        }
+
+        // Determine which column to add the chat card to
+        const leftCol = document.getElementById('chat-stack-left');
+        const rightCol = document.getElementById('chat-stack-right');
+        
+        let targetCol = leftCol;
+        if (leftCol.children.length >= 5) {
+            targetCol = rightCol;
+        }
+
+        const card = document.createElement('div');
+        card.className = 'chat-card';
+        if (isAction) card.setAttribute('data-action', 'true');
+
+        const id = 'chat_' + Date.now() + Math.random();
+        card.id = id;
+
+        playSound('chat');
+
+        const initial = selectedData.name[0];
+
+        if (isAction) {
+            let acceptText = "Accept";
+            let acceptBgStyle = "";
+            if (selectedData.action === 'maciej') {
+                acceptText = "Thank you";
+                acceptBgStyle = "background: #2e7d32;";
+            }
+
+            card.innerHTML = `
+                <div class="chat-header">
+                    <span>Google Chat</span>
+                    <div class="close-x" onclick="handleActionDecline('${id}', '${selectedData.action}')">X</div>
+                </div>
+                <div class="chat-body">
+                    <div class="chat-avatar">${initial}</div>
+                    <div class="chat-content">
+                        <div class="chat-sender">${selectedData.name}</div>
+                        <div class="chat-msg">${selectedData.msg}</div>
+                        <div class="chat-actions">
+                            <button class="chat-btn-accept" style="${acceptBgStyle}" onclick="handleActionAccept('${id}', '${selectedData.action}', '${selectedData.name}')">${acceptText}</button>
+                            <button class="chat-btn-decline" onclick="handleActionDecline('${id}', '${selectedData.action}')">Decline</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            card.innerHTML = `
+                <div class="chat-header">
+                    <span>Google Chat</span>
+                    <div class="close-x" onclick="dismissJokeChat('${id}')">X</div>
+                </div>
+                <div class="chat-body">
+                    <div class="chat-avatar">${initial}</div>
+                    <div class="chat-content">
+                        <div class="chat-sender">${selectedData.name}</div>
+                        <div class="chat-msg">${selectedData.msg}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        targetCol.appendChild(card);
+    }
+
+    // Dismiss Joke Chat with Speed Boost
+    function dismissJokeChat(id) {
+        if (isPaused) return;
+        closePopup(id);
+        dismissBoostTimer = 60; // 3 seconds @ 20 ticks/sec (+10% speed boost)
+    }
+
+    // Handle Action Chat Accept/Decline
+    function handleActionAccept(id, action, senderName) {
+        if (isPaused) return;
+        closePopup(id);
+
+        if (action === 'nadia_desk') {
+            pauseRenderWithLoading("Cleaning up desk…", 5, false);
+        } else if (action === 'maciej') {
+            maciejBoostTimer = 100; // 5s @ 20 ticks/sec (+5% speed boost)
+            createConsequencePopup("Maciej and you are now best friends", "");
+        } else if (action === 'giada' || action === 'nadia_archive') {
+            pauseRenderWithLoading("Archiving scene…", 4, true);
+        } else if (action === 'felipe') {
+            pauseRenderWithLoading("Uploading…", 4, false);
+        } else if (action === 'arnon') {
+            pauseRenderWithLoading("Saving selected…", 4, true);
+        } else if (action === 'tavia_timesheets') {
+            isReverseTime = true;
+            playSound('reverse');
+            openTimesheetMinigame();
+        } else if (action === 'miranda' || action === 'bec_comments' || action === 'bartosz') {
+            l3RevisionTriggered = true;
+            triggerProgressResetAndCatchup(senderName, action);
+        }
+    }
+
+    function handleActionDecline(id, action) {
+        if (isPaused) return;
+        closePopup(id);
+
+        if (action === 'nadia_desk') {
+            createConsequencePopup("Nadia Monte doesn’t like you anymore", "");
+        } else if (action === 'maciej') {
+            createConsequencePopup("Maciej's heart was broken", "");
+        } else if (action === 'giada') {
+            createConsequencePopup("You said NO to Giada, HOW DARE YOU?", "render paused for 10 seconds.");
+            pauseTimer = 200; // 10s
+        } else if (action === 'nadia_archive') {
+            createConsequencePopup("Nadia Monte is now sad, and it’s all your fault", "render speed slowed by 25% for 10 seconds.");
+            slow25Timer = 200; // 10s
+        } else if (action === 'felipe') {
+            createConsequencePopup("Felipe is not angry, he’s just disappointed", "");
+        } else if (action === 'arnon') {
+            createConsequencePopup("You left Arnon waiting all day, shame on you", "render paused for 10 seconds.");
+            pauseTimer = 200; // 10s
+        } else if (action === 'tavia_timesheets') {
+            handleTimesheetDecline();
+        } else if (action === 'miranda') {
+            l3RevisionTriggered = true;
+            createConsequencePopup("You just ghosted Miranda, you can run but you can’t hide", "render speed decreased by 50%, 3x more viruses, you lose your render node.");
+            slow50Timer = 99999; // Permanent
+            virusSpawnMultiplier = 3;
+            renderNodeBoost = 0;
+        } else if (action === 'bec_comments') {
+            l3RevisionTriggered = true;
+            createConsequencePopup("Bec is furious, look behind you", "render speed decreased by 50%.");
+            slow50Timer = 99999; // Permanent
+        } else if (action === 'bartosz') {
+            l3RevisionTriggered = true;
+            createConsequencePopup("I KNOW WHAT YOU DID", "");
+        }
+    }
+
+    // Timesheet Minigame Functions
+    function openTimesheetMinigame() {
+        if (isPaused) return;
+        
+        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+        const prefilled = [Math.floor(Math.random() * 2), Math.floor(Math.random() * 2) + 3];
+        
+        timesheetDaysData = [];
+        for (let i = 0; i < 5; i++) {
+            if (prefilled.includes(i)) {
+                const val = (Math.floor(Math.random() * 7) * 0.25 + 6.5).toFixed(2);
+                timesheetDaysData.push({ day: days[i], val: val, readonly: true });
+            } else {
+                timesheetDaysData.push({ day: days[i], val: '', readonly: false });
+            }
+        }
+        
+        renderTimesheetMinigame();
+        document.getElementById('timesheet-modal').style.display = 'block';
+    }
+
+    function renderTimesheetMinigame() {
+        const tbody = document.getElementById('timesheet-table-body');
+        tbody.innerHTML = '';
+        
+        let optionsHtml = '<option value="">-- Select --</option>';
+        for (let step = 6.0; step <= 9.0; step += 0.25) {
+            optionsHtml += `<option value="${step.toFixed(2)}">${step.toFixed(2)} hrs</option>`;
+        }
+
+        timesheetDaysData.forEach((d, idx) => {
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid #374151';
+            
+            if (d.readonly) {
+                tr.innerHTML = `
+                    <td style="padding: 4px; font-weight: bold; color: #d1d5db;">${d.day}</td>
+                    <td style="padding: 4px; text-align: right; color: #10b981; font-weight: bold;">${d.val} hrs <span style="font-size:8px; color:#6b7280;">(Logged)</span></td>
+                `;
+            } else {
+                tr.innerHTML = `
+                    <td style="padding: 4px; font-weight: bold; color: #e5e7eb;">${d.day}</td>
+                    <td style="padding: 4px; text-align: right;">
+                        <select onchange="calcTimesheetTotal()" id="ts_input_${idx}" style="background: #1f2937; color: #ffffff; border: 1px solid #4b5563; border-radius: 3px; padding: 2px 4px; font-size: 10px;">
+                            ${optionsHtml}
+                        </select>
+                    </td>
+                `;
+            }
+            tbody.appendChild(tr);
+        });
+        
+        calcTimesheetTotal();
+    }
+
+    function calcTimesheetTotal() {
+        let total = 0;
+        let allFilled = true;
+
+        timesheetDaysData.forEach((d, idx) => {
+            if (d.readonly) {
+                total += parseFloat(d.val);
+            } else {
+                const sel = document.getElementById(`ts_input_${idx}`);
+                if (sel && sel.value !== '') {
+                    total += parseFloat(sel.value);
+                } else {
+                    allFilled = false;
+                }
+            }
+        });
+
+        const totalEl = document.getElementById('timesheet-live-total');
+        if (totalEl) {
+            totalEl.innerText = `${total.toFixed(2)} / 37.50 hrs`;
+            if (Math.abs(total - 37.50) < 0.01 && allFilled) {
+                totalEl.style.color = '#00e676';
+            } else {
+                totalEl.style.color = '#ff9800';
+            }
+        }
+    }
+
+    function submitTimesheet() {
+        if (isPaused) return;
+
+        let total = 0;
+        let allFilled = true;
+
+        timesheetDaysData.forEach((d, idx) => {
+            if (d.readonly) {
+                total += parseFloat(d.val);
+            } else {
+                const sel = document.getElementById(`ts_input_${idx}`);
+                if (sel && sel.value !== '') {
+                    const val = parseFloat(sel.value);
+                    if (val < 6.0 || val > 9.0) allFilled = false;
+                    total += val;
+                } else {
+                    allFilled = false;
+                }
+            }
+        });
+
+        const errEl = document.getElementById('timesheet-error-msg');
+
+        if (!allFilled) {
+            errEl.innerText = "Error: All days must be filled with 6.0 to 9.0 hrs!";
+            errEl.style.display = 'block';
+            return;
+        }
+
+        if (Math.abs(total - 37.50) > 0.01) {
+            errEl.innerText = `Error: Total is ${total.toFixed(2)} hrs. Must equal 37.50 hrs exactly!`;
+            errEl.style.display = 'block';
+            return;
+        }
+
+        errEl.style.display = 'none';
+        document.getElementById('timesheet-modal').style.display = 'none';
+        
+        isReverseTime = false;
+        hideTrackHoursBtn();
+        playSound('boost');
+        archiveBoostTimer = 200; // 25% boost for 10s
+        createConsequencePopup("TIMESHEET APPROVED!", "Tavia is satisfied. Speed boosted by +25% for 10 seconds!");
+    }
+
+    function handleTimesheetDecline() {
+        if (isPaused) return;
+        document.getElementById('timesheet-modal').style.display = 'none';
+        
+        isReverseTime = true;
+        playSound('reverse');
+        spawnTrackHoursBtn();
+        createConsequencePopup("YOU CAN’T ESCAPE FROM TIME", "Time is going backwards! Click 'TRACK MY HOURS' to log your timesheets!");
+    }
+
+    function spawnTrackHoursBtn() {
+        const btn = document.getElementById('track-hours-btn');
+        if (!btn) return;
+        
+        const posX = Math.floor(Math.random() * 180) + 20;
+        const posY = Math.floor(Math.random() * 120) + 30;
+        btn.style.left = `${posX}px`;
+        btn.style.top = `${posY}px`;
+        btn.style.display = 'block';
+    }
+
+    function hideTrackHoursBtn() {
+        const btn = document.getElementById('track-hours-btn');
+        if (btn) btn.style.display = 'none';
+    }
+
+    function pauseRenderWithLoading(msg, seconds, giveArchiveBoost = false) {
+        playSound('boost');
+        pauseTimer = seconds * 20;
+
+        const layer = document.getElementById('popup-layer');
+        const popup = document.createElement('div');
+        popup.className = 'popup-window popup-center';
+        const id = 'loader_' + Date.now();
+        popup.id = id;
+
+        popup.innerHTML = `
+            <div class="popup-header"><span>3ds Max System Process</span></div>
+            <div class="popup-body">
+                <div style="font-weight:bold; margin-bottom: 6px;">${msg}</div>
+                <div id="loader_dots_${id}">...</div>
+            </div>
+        `;
+        layer.appendChild(popup);
+
+        let dotCount = 0;
+        const interval = setInterval(() => {
+            dotCount = (dotCount + 1) % 4;
+            const dotsEl = document.getElementById(`loader_dots_${id}`);
+            if (dotsEl) dotsEl.innerText = '.'.repeat(dotCount + 1);
+        }, 400);
+
+        setTimeout(() => {
+            clearInterval(interval);
+            const el = document.getElementById(id);
+            if (el) el.remove();
+
+            if (giveArchiveBoost) {
+                archiveBoostTimer = 200; // 10s @ 25% speed boost!
+                createConsequencePopup("SCENE SAVED!", "Speed boosted by +25% for 10 seconds!");
+            }
+        }, seconds * 1000);
+    }
+
+    // Trigger L3 Revision Progress Drain + Instant Speed Buff Start
+    function triggerProgressResetAndCatchup(senderName, action = '') {
+        hasTriggeredRevision = true; // Stay in Level 2-3 logic!
+        playSound('reset');
+        const layer = document.getElementById('popup-layer');
+        const popup = document.createElement('div');
+        popup.className = 'popup-window popup-center';
+        const id = 'reset_pop_' + Date.now();
+        popup.id = id;
+
+        popup.innerHTML = `
+            <div class="popup-header"><span>Client Revision</span></div>
+            <div class="popup-body">
+                <div style="font-weight:bold; color:#ff5252;" id="reset_msg_${id}">Applying comments…</div>
+            </div>
+        `;
+        layer.appendChild(popup);
+
+        // Rapidly drain progress to 0
+        const drainInterval = setInterval(() => {
+            renderProgress -= 3.5;
+            if (renderProgress <= 0) {
+                renderProgress = 0;
+                clearInterval(drainInterval);
+
+                // Speed buff starts IMMEDIATELY as soon as progress hits 0
+                catchUpMultiplier = 4.0;   // 4x catch-up speed back up to Level 3 (70%)
+                permL3BoostActive = true;  // Permanent 1.5x boost once back at 70%+
+
+                const popEl = document.getElementById(id);
+                if (popEl) {
+                    let successMsg = `${senderName} is happy with the comments, your pc is now faster.`;
+                    if (action === 'bartosz') {
+                        successMsg = "Ouch!";
+                    }
+                    popEl.innerHTML = `
+                        <div class="popup-header"><span>Client Revision Approved</span></div>
+                        <div class="popup-body">
+                            <div style="font-weight:bold; color:#00e676; margin-bottom: 8px;">${successMsg}</div>
+                            <button class="popup-btn" onclick="dismissRevisionPopup('${id}')">OK</button>
+                        </div>
+                    `;
+                }
+            }
+        }, 50);
+    }
+
+    function dismissRevisionPopup(id) {
+        if (isPaused) return;
+        closePopup(id);
+    }
+
+    function createConsequencePopup(title, italicSubtext) {
+        playSound('virus');
+        const layer = document.getElementById('popup-layer');
+        const popup = document.createElement('div');
+        popup.className = 'popup-window popup-center';
+        const id = 'conseq_' + Date.now();
+        popup.id = id;
+
+        popup.innerHTML = `
+            <div class="popup-header">
+                <span>SYSTEM MESSAGE</span>
+                <div class="close-x" onclick="closePopup('${id}')">X</div>
+            </div>
+            <div class="popup-body">
+                <div style="font-weight:bold;">${title}</div>
+                ${italicSubtext ? `<span class="popup-subtext">${italicSubtext}</span>` : ''}
+                <button class="popup-btn" onclick="closePopup('${id}')">OK</button>
+            </div>
+        `;
+        layer.appendChild(popup);
+    }
+
+    // Virus, RAM Scams, Render Node & AntiVirus Popups
+    function spawnVirusPopup() {
+        const titles = ["SYSTEM WARNING", "<b>VIRUS</b> DETECTED", "CRITICAL <b>VIRUS</b> ALERT"];
+        const msgs = ["Trojan32.EXE consuming CPU!", "Unsolicited adware running in background.", "Memory Leak Error: Render thread stalled!"];
+        const idx = Math.floor(Math.random() * titles.length);
+        createGenericPopup(titles[idx], msgs[idx], 'virus', "Slowing down render speed by 10%");
+        playSound('virus');
+    }
+
+    function spawnRamPopup() {
+        const titles = [
+            "DOWNLOAD 64GB RAM FOR FREE",
+            "★ FREE RAM UPGRADE ★",
+            "BE THE GOD OF RAM"
+        ];
+        const msgs = [
+            "This will super mega speed up your renders!",
+            "Everybody is gonna love you!",
+            "Double your render speed in 1-Click!"
+        ];
+        const idx = Math.floor(Math.random() * titles.length);
+        createGenericPopup(titles[idx], msgs[idx], 'ram_scam', "This is a complete lie.");
+    }
+
+    function spawnRenderNodePopup() {
+        createGenericPopup("RENDER NODE AVAILABLE", "Node #04 Available! Connect in 5s (+10% Permanent Speed)?", 'node');
+    }
+
+    function spawnAntiVirusPopup() {
+        createGenericPopup("ANTIVIRUS AVAILABLE", "Panda AntiVirus #01 Ready! Clean ALL active viruses in 5s?", 'antivirus');
+    }
+
+    function createGenericPopup(title, msg, type, subtext = '') {
+        const layer = document.getElementById('popup-layer');
+        const popup = document.createElement('div');
+        
+        let themeClass = 'popup-window';
+        if (type === 'virus') themeClass += ' popup-virus';
+        else if (type === 'ram_scam') themeClass += ' popup-ram';
+        else if (type === 'node') themeClass += ' popup-node';
+        else if (type === 'antivirus') themeClass += ' popup-antivirus';
+
+        popup.className = themeClass;
+
+        // Spread popups across middle and right area of CRT screen (X: 40px to 250px, Y: 10px to 150px)
+        const baseGridX = [40, 140, 230, 80, 180, 250];
+        const baseGridY = [15, 60, 110, 135, 30, 85];
+        const gridIdx = popupOffsetIndex % baseGridX.length;
+        popupOffsetIndex++;
+
+        const jitterX = Math.floor(Math.random() * 30) - 15;
+        const jitterY = Math.floor(Math.random() * 20) - 10;
+
+        const posX = Math.max(10, Math.min(250, baseGridX[gridIdx] + jitterX));
+        const posY = Math.max(10, Math.min(150, baseGridY[gridIdx] + jitterY));
+
+        popup.style.left = `${posX}px`;
+        popup.style.top = `${posY}px`;
+
+        const id = 'pop_' + Date.now() + Math.random();
+        popup.id = id;
+
+        let btnHtml = '';
+        if (type === 'virus') {
+            btnHtml = `
+                <div style="color: #ff5252; font-weight: bold; margin-top: 4px; font-size: 10px;">⚠️ INFECTING IN: <span id="vtimer_${id}">5</span>s</div>
+                <button class="popup-btn" id="vclean_btn_${id}" style="margin-top:6px;" onclick="handleCleanVirus('${id}', this)">CLEAN VIRUS</button>
+                <button class="popup-btn popup-btn-danger" style="margin-top:4px;" onclick="handleIgnoreVirus('${id}')">IGNORE</button>
+            `;
+        } else if (type === 'ram_scam') {
+            btnHtml = `<button class="popup-btn" onclick="handleRamScamClick('${id}')">DOWNLOAD RAM</button>`;
+        } else if (type === 'node') {
+            btnHtml = `<button class="popup-btn" style="background:#0091ea" id="node_btn_${id}" onclick="handleNodeConnect('${id}')">CONNECT NODE (5s)</button>`;
+        } else if (type === 'antivirus') {
+            btnHtml = `<button class="popup-btn" style="background:#0f9d58" id="antivirus_btn_${id}" onclick="handleAntiVirusConnect('${id}')">CLEAN ALL VIRUSES (5s)</button>`;
+        }
+
+        const closeAction = (type === 'virus') ? `handleIgnoreVirus('${id}')` : `closePopup('${id}')`;
+
+        popup.innerHTML = `
+            <div class="popup-header">
+                <span>${title}</span>
+                <div class="close-x" onclick="${closeAction}">X</div>
+            </div>
+            <div class="popup-body">
+                ${msg}
+                ${subtext ? `<span class="popup-subtext">${subtext}</span>` : ''}
+                ${btnHtml}
+            </div>
+        `;
+
+        layer.appendChild(popup);
+
+        if (type === 'virus') {
+            let virusCountdown = 5;
+            const timer = setInterval(() => {
+                if (isPaused) return;
+                virusCountdown--;
+                const vtimerEl = document.getElementById(`vtimer_${id}`);
+                if (vtimerEl) vtimerEl.innerText = virusCountdown;
+
+                if (virusCountdown <= 0) {
+                    clearInterval(timer);
+                    delete pendingVirusTimers[id];
+                    markActiveVirus(id);
+
+                    const btn = document.getElementById(`vclean_btn_${id}`);
+                    if (btn) {
+                        btn.disabled = true;
+                        btn.innerText = "INFECTED!";
+                        btn.style.background = "#7f1d1d";
+                    }
+                }
+            }, 1000);
+            pendingVirusTimers[id] = timer;
+        } else if (type === 'node') {
+            let nodeTimerSec = 5;
+            const timerId = setInterval(() => {
+                nodeTimerSec--;
+                const btn = document.getElementById(`node_btn_${id}`);
+                if (btn) btn.innerText = `CONNECT NODE (${nodeTimerSec}s)`;
+                if (nodeTimerSec <= 0) {
+                    clearInterval(timerId);
+                    closePopup(id);
+                }
+            }, 1000);
+        } else if (type === 'antivirus') {
+            let avTimerSec = 5;
+            const timerId = setInterval(() => {
+                avTimerSec--;
+                const btn = document.getElementById(`antivirus_btn_${id}`);
+                if (btn) btn.innerText = `CLEAN ALL VIRUSES (${avTimerSec}s)`;
+                if (avTimerSec <= 0) {
+                    clearInterval(timerId);
+                    closePopup(id);
+                }
+            }, 1000);
+        }
+    }
+
+    function markActiveVirus(id) {
+        if (!activeViruses.includes(id)) {
+            activeViruses.push(id);
+        }
+    }
+
+    // Cleaning a virus takes 2 seconds with countdown
+    function handleCleanVirus(id, btnEl) {
+        if (isPaused) return;
+        if (btnEl.disabled) return;
+        btnEl.disabled = true;
+
+        // Stop the 5s infection timer immediately
+        if (pendingVirusTimers[id]) {
+            clearInterval(pendingVirusTimers[id]);
+            delete pendingVirusTimers[id];
+        }
+
+        let cleanTimeLeft = 2;
+        btnEl.innerText = `CLEANING... (${cleanTimeLeft}s)`;
+        btnEl.style.background = "#0288d1";
+
+        const cleanInterval = setInterval(() => {
+            if (isPaused) return;
+            cleanTimeLeft--;
+            if (cleanTimeLeft > 0) {
+                btnEl.innerText = `CLEANING... (${cleanTimeLeft}s)`;
+            } else {
+                clearInterval(cleanInterval);
+                closePopup(id);
+            }
+        }, 1000);
+    }
+
+    function handleIgnoreVirus(id) {
+        if (isPaused) return;
+        if (pendingVirusTimers[id]) {
+            clearInterval(pendingVirusTimers[id]);
+            delete pendingVirusTimers[id];
+        }
+        markActiveVirus(id);
+
+        const el = document.getElementById(id);
+        if (el) el.remove();
+    }
+
+    function handleAntiVirusConnect(id) {
+        if (isPaused) return;
+        closePopup(id);
+        playSound('boost');
+
+        // Clear all pending virus timers
+        for (let tid in pendingVirusTimers) {
+            clearInterval(pendingVirusTimers[tid]);
+        }
+        pendingVirusTimers = {};
+
+        // Remove all virus popups from screen
+        const virusPopups = document.querySelectorAll('.popup-virus');
+        virusPopups.forEach(el => el.remove());
+
+        // Clear activeViruses array
+        activeViruses = [];
+
+        createConsequencePopup("ANTIVIRUS EXECUTED!", "All active viruses cleared from system memory!");
+    }
+
+    function handleRamScamClick(id) {
+        if (isPaused) return;
+        closePopup(id);
+        playSound('virus');
+
+        markActiveVirus('ram_virus_' + Date.now() + Math.random());
+
+        if (Math.random() < 0.5) {
+            ramScamSpeedPenalty = 0.50;
+            ramScamSpeedTimer = 200; // 10s
+        } else {
+            virusSpawnMultiplier = 3;
+            virus3xTimer = 400; // 20s
+        }
+    }
+
+    function handleNodeConnect(id) {
+        if (isPaused) return;
+        closePopup(id);
+        playSound('boost');
+        renderNodeBoost += 0.10; // Permanent +10%
+    }
+
+    function triggerWindowsUpdate() {
+        isUpdateActive = true;
+        updateCountdown = 10; // 10 seconds timer
+        document.getElementById('update-toast').style.display = 'block';
+        document.getElementById('update-timer').innerText = `${updateCountdown}s`;
+        document.getElementById('update-timer-text').innerText = updateCountdown;
+
+        updateIntervalId = setInterval(() => {
+            if (isPaused) return;
+
+            updateCountdown--;
+            document.getElementById('update-timer').innerText = `${updateCountdown}s`;
+            document.getElementById('update-timer-text').innerText = updateCountdown;
+
+            if (updateCountdown <= 0) {
+                clearInterval(updateIntervalId);
+                triggerRestart();
+            }
+        }, 1000);
+    }
+
+    function snoozeUpdate() {
+        if (isPaused) return;
+        if (!isUpdateActive) return;
+        clearInterval(updateIntervalId);
+        hideWindowsUpdate();
+        updateSpawnTimer = -300;
+    }
+
+    function hideWindowsUpdate() {
+        isUpdateActive = false;
+        document.getElementById('update-toast').style.display = 'none';
+    }
+
+    function triggerRestart() {
+        if (isPaused) return;
+        hideWindowsUpdate();
+        gameOver('Your OS detected peak productivity and initiated a critical reboot to update a bluetooth printer driver. Because you didn\'t save, your PC concluded your work was a collective hallucination and erased it from existence.', 'windows_update');
+    }
+
+    function closePopup(id) {
+        if (pendingVirusTimers[id]) {
+            clearInterval(pendingVirusTimers[id]);
+            delete pendingVirusTimers[id];
+        }
+
+        const el = document.getElementById(id);
+        if (el) el.remove();
+
+        const index = activeViruses.indexOf(id);
+        if (index > -1) {
+            activeViruses.splice(index, 1);
+        }
+    }
+
+    function clearPopups() {
+        document.getElementById('popup-layer').innerHTML = '';
+        document.getElementById('chat-stack-left').innerHTML = '';
+        document.getElementById('chat-stack-right').innerHTML = '';
+        activeViruses = [];
+        for (let tid in pendingVirusTimers) {
+            clearInterval(pendingVirusTimers[tid]);
+        }
+        pendingVirusTimers = {};
+    }
+
+    // Custom Game Over Handler with specific texts
+    function gameOver(reason, type = 'max_crash') {
+        clearInterval(gameIntervalId);
+        clearInterval(musicIntervalId);
+        playLossMusic();
+        gameState = 'GAMEOVER';
+
+        document.getElementById('start-screen').style.display = 'none';
+        document.getElementById('win-screen').style.display = 'none';
+        document.getElementById('pause-overlay').style.display = 'none';
+        document.getElementById('timesheet-modal').style.display = 'none';
+        
+        const crtModalLayer = document.getElementById('crt-modal-layer');
+        crtModalLayer.style.display = 'flex';
+
+        const maxModal = document.getElementById('max-crash-modal');
+        const winModal = document.getElementById('win-update-modal');
+        const tempModal = document.getElementById('temporal-modal');
+        const deadModal = document.getElementById('deadline-modal');
+
+        maxModal.style.display = 'none';
+        winModal.style.display = 'none';
+        tempModal.style.display = 'none';
+        deadModal.style.display = 'none';
+
+        if (type === 'windows_update') {
+            winModal.style.display = 'flex';
+            document.getElementById('win-fail-reason').innerText = reason;
+        } else if (type === 'temporal_collapse') {
+            tempModal.style.display = 'flex';
+            document.getElementById('temporal-fail-reason').innerText = reason;
+        } else if (type === 'failed_deadline') {
+            deadModal.style.display = 'flex';
+            document.getElementById('deadline-fail-reason').innerText = reason;
+        } else if (type === 'notification_overflow') {
+            maxModal.style.display = 'flex';
+            document.getElementById('max-crash-header-title').innerText = "SYSTEM OVERFLOW - CHAT CRASH";
+            document.getElementById('max-crash-title-text').innerText = "DIGITAL DROWNING!";
+            document.getElementById('max-fail-reason').innerText = reason;
+            document.getElementById('max-crash-details-text').innerHTML = "PROCESS: google_chat.exe | ERROR: HYPER_INTELLIGENT_MONSTER_CREATED<br>HARD_DRIVE: CONSUMED | RESIGNATION_LETTER: SUBMITTED";
+        } else if (type === 'virus_overload') {
+            maxModal.style.display = 'flex';
+            document.getElementById('max-crash-header-title').innerText = "MALWARE BOARD MEETING - OS LIQUIDATED";
+            document.getElementById('max-crash-title-text').innerText = "MALWARE OVERLOAD: FILES HELD HOSTAGE!";
+            document.getElementById('max-fail-reason').innerText = reason;
+            document.getElementById('max-crash-details-text').innerHTML = "STATUS: C: DRIVE VOTING MAJORITY REACHED (5/5)<br>EMERGENCY BOARD MEETING: CONVENED<br>VERDICT: OPERATING SYSTEM LIQUIDATED";
+        } else {
+            maxModal.style.display = 'flex';
+            document.getElementById('max-crash-header-title').innerText = "3DSMAX.EXE - APPLICATION ERROR";
+            document.getElementById('max-crash-title-text').innerText = "3DS MAX HAS CRASHED";
+            document.getElementById('max-fail-reason').innerText = reason;
+            document.getElementById('max-crash-details-text').innerHTML = "EXCEPTION_ACCESS_VIOLATION (0xC0000005)<br>PROCESS: 3dsmax.exe | MODULE: CoronaRender_Pipeline.dll<br>STATUS: UNHANDLED THREAD CRASH — RENDER TERMINATED";
+        }
+    }
+
+    function winGame() {
+        clearInterval(gameIntervalId);
+        clearInterval(musicIntervalId);
+        playWinMusic();
+        gameState = 'WIN';
+        document.getElementById('win-screen').style.display = 'flex';
+    }
+
+    function restartGame() {
+        document.getElementById('start-screen').style.display = 'flex';
+        document.getElementById('crt-modal-layer').style.display = 'none';
+        document.getElementById('win-screen').style.display = 'none';
+        document.getElementById('pause-overlay').style.display = 'none';
+        document.getElementById('timesheet-modal').style.display = 'none';
+        hideTrackHoursBtn();
+        gameState = 'MENU';
+
+        if (musicIntervalId) clearInterval(musicIntervalId);
+        startMusicIntervalId = setInterval(playStartMusicTick, 300);
+    }
+
+    // Start Menu Ambient Music Loop
+    startMusicIntervalId = setInterval(playStartMusicTick, 300);
+</script>
+</body>
+</html>
