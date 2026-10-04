@@ -38,10 +38,10 @@
         /* CRT Glass Screen Region - Bounded strictly to CRT Monitor Glass Area */
         #crt-screen {
             position: absolute;
-            top: 17.2%;
+            top: 17.5%;
             left: 26.2%;
-            width: 47.6%;
-            height: 59.0%;
+            width: 48.0%;
+            height: 57.5%;
             overflow: hidden;
             pointer-events: auto;
         }
@@ -56,41 +56,46 @@
             z-index: 800;
         }
 
-        /* Dynamic Progress Bar - Centered on Corona Window Lower Area */
-        #render-progress-text {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            top: 61.8%;
-            font-size: 11px;
-            font-weight: bold;
-            color: #ffffff;
-            font-family: monospace;
-            text-shadow: 1px 1px 3px #000;
-            z-index: 50;
-            white-space: nowrap;
-            text-align: center;
-        }
-
+        /* Dynamic Progress Bar - Placed directly on Corona Render window bottom bar */
         #render-progress-container {
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
-            top: 66.8%;
-            width: 54.0%;
-            height: 4.6%;
+            top: 65.5%;
+            width: 38.0%;
+            height: 5.2%;
             background: #111;
             border: 1px solid #555;
             border-radius: 2px;
             overflow: hidden;
             z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         #render-progress-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
             height: 100%;
             width: 0%;
             background: linear-gradient(90deg, #1e88e5, #00e676);
             transition: width 0.1s linear;
+        }
+
+        #render-progress-text {
+            position: relative;
+            z-index: 60;
+            font-size: 10px;
+            font-weight: 900;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-shadow: 1px 1px 3px #000, -1px -1px 3px #000, 0 0 4px #000;
+            white-space: nowrap;
+            pointer-events: none;
         }
 
         /* Taskbar Timer Clock */
@@ -875,98 +880,6 @@
             background: #d32f2f;
         }
 
-        /* Green Win Pop-up Screen Styling */
-        .win-success-popup {
-            background: #0d2818;
-            border: 2px solid #00e676;
-            color: #ffffff;
-            box-shadow: 0 0 35px rgba(0, 230, 118, 0.4);
-        }
-
-        .win-success-header {
-            background: linear-gradient(90deg, #0f9d58, #00e676);
-            color: #0d2818;
-            padding: 6px 10px;
-            font-size: 10px;
-            font-weight: 800;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        .win-success-body {
-            padding: 14px 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            flex-grow: 1;
-            justify-content: space-between;
-        }
-
-        .win-success-main {
-            display: flex;
-            gap: 14px;
-            align-items: flex-start;
-        }
-
-        .win-success-icon {
-            font-size: 32px;
-            line-height: 1;
-            color: #00e676;
-            flex-shrink: 0;
-            text-shadow: 0 0 10px rgba(0, 230, 118, 0.6);
-        }
-
-        .win-success-title {
-            font-size: 13px;
-            font-weight: 800;
-            color: #00e676;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            text-shadow: 0 0 8px rgba(0, 230, 118, 0.4);
-        }
-
-        .win-success-desc {
-            font-size: 10px;
-            color: #e8f5e9;
-            line-height: 1.4;
-        }
-
-        .win-success-details {
-            background: rgba(0, 0, 0, 0.35);
-            border: 1px solid #1b5e20;
-            border-left: 3px solid #00e676;
-            padding: 8px 10px;
-            font-family: monospace;
-            font-size: 9px;
-            color: #b9f6ca;
-            border-radius: 3px;
-            line-height: 1.4;
-        }
-
-        .btn-win-success-restart {
-            background: #00e676;
-            color: #0d2818;
-            border: none;
-            padding: 8px 16px;
-            font-weight: 800;
-            font-size: 10px;
-            border-radius: 3px;
-            cursor: pointer;
-            align-self: flex-end;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.2s;
-            box-shadow: 0 3px 12px rgba(0, 230, 118, 0.4);
-        }
-        .btn-win-success-restart:hover {
-            background: #69f0ae;
-            transform: translateY(-1px);
-        }
-
         /* Align Start Button over the 3D Render Button in start-bg.jpg */
         .crt-render-btn {
             position: absolute;
@@ -987,6 +900,30 @@
             border-color: #ffe082;
             box-shadow: 0 0 30px rgba(255, 152, 0, 0.7);
         }
+
+        .loader-bar-bottom {
+            position: absolute;
+            bottom: 12px;
+            display: flex;
+            gap: 10px;
+            z-index: 1010;
+        }
+
+        .main-btn {
+            background: rgba(38, 50, 56, 0.85);
+            color: #b0bec5;
+            border: 1px solid #45536e;
+            padding: 6px 14px;
+            font-size: 11px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+            backdrop-filter: blur(4px);
+        }
+        .main-btn:hover { background: #37474f; color: #fff; }
 
         h1 {
             font-size: 36px;
@@ -1011,10 +948,10 @@
 <div id="game-viewport">
     <!-- CRT Display Overlay Layer -->
     <div id="crt-screen">
-        <!-- Dynamic Progress Over Corona Window -->
-        <div id="render-progress-text">Render Progress: <span id="progress-val">0%</span></div>
+        <!-- Dynamic Progress Over Corona Window (Text directly on bar) -->
         <div id="render-progress-container">
             <div id="render-progress-fill"></div>
+            <div id="render-progress-text">RENDER PROGRESS: <span id="progress-val">0%</span></div>
         </div>
 
         <!-- Taskbar Deadline Clock Timer -->
@@ -1186,33 +1123,15 @@
     <!-- Start Overlay (100% size of #game-viewport) -->
     <div id="start-screen" class="overlay-screen">
         <button class="crt-render-btn" onclick="startGame()" title="Click to Start Render"></button>
+        
+
     </div>
 
-    <!-- Win Overlay - Styled as Green 3ds Max / Windows Update Crash Popup -->
-    <div id="win-screen" class="overlay-screen" style="display:none; background-color: rgba(4, 20, 10, 0.92); background-image: none;">
-        <div class="modal-popup win-success-popup">
-            <div class="win-success-header">
-                <span>3DS MAX - RENDER SUCCESSFUL</span>
-                <span style="font-size:12px; cursor:pointer;" onclick="restartGame()">✕</span>
-            </div>
-            <div class="win-success-body">
-                <div class="win-success-main">
-                    <div class="win-success-icon">✔ 😊</div>
-                    <div>
-                        <div class="win-success-title">DELIVERABLE SENT! PEACE RESTORED</div>
-                        <div class="win-success-desc">
-                            The final pixel has locked into place. Upon opening the file, the Client has experienced a state of such pure corporate enlightenment that the image was approved in a nano-second. Your work is currently getting framed in the Client's executive suite.
-                        </div>
-                    </div>
-                </div>
-                <div class="win-success-details">
-                    STATUS: 100% RENDER COMPLETE & DELIVERED<br>
-                    CLIENT STATUS: PURE CORPORATE ENLIGHTENMENT ACHIEVED<br>
-                    FRAME LOCATION: EXECUTIVE SUITE
-                </div>
-                <button class="btn-win-success-restart" onclick="restartGame()">PLAY AGAIN</button>
-            </div>
-        </div>
+    <!-- Win Overlay -->
+    <div id="win-screen" class="overlay-screen" style="display:none; background-image: none; background-color: rgba(8,10,15,0.95);">
+        <h1 style="color: #00e676;">RENDER 100% COMPLETE!</h1>
+        <p class="desc">Congratulations! You survived the deadline, chats, and Windows Update!</p>
+        <button class="main-btn" style="padding: 10px 24px; font-size: 14px;" onclick="restartGame()">Play Again</button>
     </div>
 </div>
 
@@ -1246,7 +1165,6 @@
     let maciejBoostTimer = 0;      // 5% speed boost for 5s (100 ticks) on Maciej "Thank you"
     let permL3BoostActive = false; // 1.5x permanent boost after Level 3 revision comments
     let l3RevisionTriggered = false; // Either Bec or Miranda or Bartosz revision, not both/all!
-    let level3ActionSpawned = false; // Guaranteed strict limit: strictly MAX 1 Level 3 action per game!
     let hasTriggeredRevision = false; // Prevents Level 0/1 messages after Level 3 progress drain!
 
     // Pop-up Positioning Grid Offset Counter & Antivirus Timer
@@ -1340,6 +1258,8 @@
         { name: "Bec Byrne", msg: "The client just sent a pdf with 200 comments", action: 'bec_comments' },
         { name: "Bartosz Grochulski", msg: "You have been using the wrong model...", action: 'bartosz' }
     ];
+
+
 
     // Web Audio Sound System
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1441,12 +1361,10 @@
         if (isMusicMuted || gameState !== 'PLAYING' || isPaused) return;
         if (audioCtx.state === 'suspended') audioCtx.resume();
 
-        const isDramatic = deadlineTimeSec <= 30;
-
-        // Lead Osc
+        // Lead Osc (Original Square Wave Synth)
         const lead = audioCtx.createOscillator();
         const leadGain = audioCtx.createGain();
-        lead.type = 'triangle';
+        lead.type = 'square';
         lead.connect(leadGain);
         leadGain.connect(audioCtx.destination);
 
@@ -1457,13 +1375,13 @@
 
         const pitchMultiplier = 1 + (renderProgress / 200);
         lead.frequency.setValueAtTime(leadFreq * pitchMultiplier, audioCtx.currentTime);
-        leadGain.gain.setValueAtTime(isDramatic ? 0.035 : 0.02, audioCtx.currentTime);
-        leadGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+        leadGain.gain.setValueAtTime(0.025, audioCtx.currentTime);
+        leadGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.10);
 
         lead.start();
-        lead.stop(audioCtx.currentTime + 0.15);
+        lead.stop(audioCtx.currentTime + 0.10);
 
-        // Deep Harmonic Bass Osc (Subtle tension under 30s without annoying sirens)
+        // Bass Osc (Original Sawtooth Wave)
         const bass = audioCtx.createOscillator();
         const bassGain = audioCtx.createGain();
         bass.type = 'sawtooth';
@@ -1476,33 +1394,16 @@
         }
 
         bass.frequency.setValueAtTime(bassFreq, audioCtx.currentTime);
-        bassGain.gain.setValueAtTime(isDramatic ? 0.045 : 0.025, audioCtx.currentTime);
-        bassGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.20);
+        bassGain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+        bassGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
 
         bass.start();
-        bass.stop(audioCtx.currentTime + 0.20);
-
-        // Low Sub-Drone Pulse for cinematic tension under 30s
-        if (isDramatic) {
-            const drone = audioCtx.createOscillator();
-            const droneGain = audioCtx.createGain();
-            drone.type = 'sine';
-            drone.frequency.setValueAtTime(65.41, audioCtx.currentTime); // Deep C2 drone
-            droneGain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-            droneGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.22);
-            drone.connect(droneGain);
-            droneGain.connect(audioCtx.destination);
-            drone.start();
-            drone.stop(audioCtx.currentTime + 0.22);
-        }
+        bass.stop(audioCtx.currentTime + 0.12);
 
         musicStep++;
 
-        // Smooth, stately increase in tempo under 30s
-        const nextDelay = isDramatic 
-            ? Math.max(120, 170 - (renderProgress * 0.5)) 
-            : Math.max(100, 240 - (renderProgress * 1.3));
-
+        // Original song rhythm, made faster (Base delay 160ms scaling down to 60ms)
+        const nextDelay = Math.max(60, 160 - (renderProgress * 1.1));
         clearInterval(musicIntervalId);
         musicIntervalId = setInterval(playMusicTick, nextDelay);
     }
@@ -1592,7 +1493,7 @@
         
         // Reset Virus pending timers
         for (let tid in pendingVirusTimers) {
-            clearInterval(pendingVirusTimers[tid]);
+            clearTimeout(pendingVirusTimers[tid]);
         }
         pendingVirusTimers = {};
         activeViruses = [];
@@ -1613,7 +1514,6 @@
         maciejBoostTimer = 0;
         permL3BoostActive = false;
         l3RevisionTriggered = false;
-        level3ActionSpawned = false; // Strictly reset Level 3 action counter
         hasTriggeredRevision = false;
 
         popupOffsetIndex = 0;
@@ -1653,7 +1553,7 @@
         gameIntervalId = setInterval(tick, 50); // 20 ticks per second
 
         if (musicIntervalId) clearInterval(musicIntervalId);
-        musicIntervalId = setInterval(playMusicTick, 240);
+        musicIntervalId = setInterval(playMusicTick, 160);
     }
 
     // Main Game Tick
@@ -1872,7 +1772,7 @@
         document.getElementById('node-count').innerText = Math.round(renderNodeBoost / 0.10);
     }
 
-    // Google Chat Spawner with Level Pools & L3 Revision Exclusivity Limit (ONLY 1 SINGLE L3 ACTION PER GAME)
+    // Google Chat Spawner with Level Pools & L3 Revision Exclusivity
     function spawnGoogleChat() {
         let pool = [];
         let actionPool = [];
@@ -1887,7 +1787,7 @@
             actionPool = level2Actions;
         } else {
             pool = level3Jokes;
-            if (!l3RevisionTriggered && !level3ActionSpawned) {
+            if (!l3RevisionTriggered) {
                 actionPool = level3Actions;
             } else {
                 actionPool = [];
@@ -1906,10 +1806,6 @@
             : availableJokes[Math.floor(Math.random() * availableJokes.length)];
 
         usedMessages.add(selectedData.name + ':' + selectedData.msg);
-
-        if (isAction && currentLevel === 3) {
-            level3ActionSpawned = true; // Lock so no other Level 3 action message can spawn this game
-        }
 
         // Determine which column to add the chat card to
         const leftCol = document.getElementById('chat-stack-left');
@@ -2237,7 +2133,7 @@
         }, seconds * 1000);
     }
 
-    // Trigger L3 Revision Progress Drain + Instant Speed Buff Start
+    // Trigger L3 Revision Progress Drain + OK Button Dismiss
     function triggerProgressResetAndCatchup(senderName, action = '') {
         hasTriggeredRevision = true; // Stay in Level 2-3 logic!
         playSound('reset');
@@ -2262,10 +2158,6 @@
                 renderProgress = 0;
                 clearInterval(drainInterval);
 
-                // Speed buff starts IMMEDIATELY as soon as progress hits 0
-                catchUpMultiplier = 4.0;   // 4x catch-up speed back up to Level 3 (70%)
-                permL3BoostActive = true;  // Permanent 1.5x boost once back at 70%+
-
                 const popEl = document.getElementById(id);
                 if (popEl) {
                     let successMsg = `${senderName} is happy with the comments, your pc is now faster.`;
@@ -2287,6 +2179,8 @@
     function dismissRevisionPopup(id) {
         if (isPaused) return;
         closePopup(id);
+        catchUpMultiplier = 4.0;   // 4x speed until back to Level 3 (70%)
+        permL3BoostActive = true;  // Keep 1.5x permanent boost once back at 70%+!
     }
 
     function createConsequencePopup(title, italicSubtext) {
@@ -2376,9 +2270,8 @@
         let btnHtml = '';
         if (type === 'virus') {
             btnHtml = `
-                <div style="color: #ff5252; font-weight: bold; margin-top: 4px; font-size: 10px;">⚠️ INFECTING IN: <span id="vtimer_${id}">5</span>s</div>
-                <button class="popup-btn" id="vclean_btn_${id}" style="margin-top:6px;" onclick="handleCleanVirus('${id}', this)">CLEAN VIRUS</button>
-                <button class="popup-btn popup-btn-danger" style="margin-top:4px;" onclick="handleIgnoreVirus('${id}')">IGNORE</button>
+                <button class="popup-btn" onclick="handleCleanVirus('${id}', this)">CLEAN VIRUS</button>
+                <button class="popup-btn popup-btn-danger" onclick="handleIgnoreVirus('${id}')">IGNORE</button>
             `;
         } else if (type === 'ram_scam') {
             btnHtml = `<button class="popup-btn" onclick="handleRamScamClick('${id}')">DOWNLOAD RAM</button>`;
@@ -2405,26 +2298,9 @@
         layer.appendChild(popup);
 
         if (type === 'virus') {
-            let virusCountdown = 5;
-            const timer = setInterval(() => {
-                if (isPaused) return;
-                virusCountdown--;
-                const vtimerEl = document.getElementById(`vtimer_${id}`);
-                if (vtimerEl) vtimerEl.innerText = virusCountdown;
-
-                if (virusCountdown <= 0) {
-                    clearInterval(timer);
-                    delete pendingVirusTimers[id];
-                    markActiveVirus(id);
-
-                    const btn = document.getElementById(`vclean_btn_${id}`);
-                    if (btn) {
-                        btn.disabled = true;
-                        btn.innerText = "INFECTED!";
-                        btn.style.background = "#7f1d1d";
-                    }
-                }
-            }, 1000);
+            const timer = setTimeout(() => {
+                markActiveVirus(id);
+            }, 5000); // 5 seconds timeout
             pendingVirusTimers[id] = timer;
         } else if (type === 'node') {
             let nodeTimerSec = 5;
@@ -2457,38 +2333,26 @@
         }
     }
 
-    // Cleaning a virus takes 2 seconds with countdown
     function handleCleanVirus(id, btnEl) {
         if (isPaused) return;
         if (btnEl.disabled) return;
         btnEl.disabled = true;
+        btnEl.innerText = "Cleaning...";
 
-        // Stop the 5s infection timer immediately
         if (pendingVirusTimers[id]) {
-            clearInterval(pendingVirusTimers[id]);
+            clearTimeout(pendingVirusTimers[id]);
             delete pendingVirusTimers[id];
         }
 
-        let cleanTimeLeft = 2;
-        btnEl.innerText = `CLEANING... (${cleanTimeLeft}s)`;
-        btnEl.style.background = "#0288d1";
-
-        const cleanInterval = setInterval(() => {
-            if (isPaused) return;
-            cleanTimeLeft--;
-            if (cleanTimeLeft > 0) {
-                btnEl.innerText = `CLEANING... (${cleanTimeLeft}s)`;
-            } else {
-                clearInterval(cleanInterval);
-                closePopup(id);
-            }
-        }, 1000);
+        setTimeout(() => {
+            closePopup(id);
+        }, 2000);
     }
 
     function handleIgnoreVirus(id) {
         if (isPaused) return;
         if (pendingVirusTimers[id]) {
-            clearInterval(pendingVirusTimers[id]);
+            clearTimeout(pendingVirusTimers[id]);
             delete pendingVirusTimers[id];
         }
         markActiveVirus(id);
@@ -2504,7 +2368,7 @@
 
         // Clear all pending virus timers
         for (let tid in pendingVirusTimers) {
-            clearInterval(pendingVirusTimers[tid]);
+            clearTimeout(pendingVirusTimers[tid]);
         }
         pendingVirusTimers = {};
 
@@ -2583,7 +2447,7 @@
 
     function closePopup(id) {
         if (pendingVirusTimers[id]) {
-            clearInterval(pendingVirusTimers[id]);
+            clearTimeout(pendingVirusTimers[id]);
             delete pendingVirusTimers[id];
         }
 
@@ -2602,7 +2466,7 @@
         document.getElementById('chat-stack-right').innerHTML = '';
         activeViruses = [];
         for (let tid in pendingVirusTimers) {
-            clearInterval(pendingVirusTimers[tid]);
+            clearTimeout(pendingVirusTimers[tid]);
         }
         pendingVirusTimers = {};
     }
