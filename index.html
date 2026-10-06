@@ -35,7 +35,18 @@
             border-radius: 8px;
         }
 
-        /* CRT Glass Screen Region - Bounded strictly to CRT Monitor Glass Area */
+        /* Dedicated Slow-Mo Dim Overlay (Sits behind boss modals) */
+        #slowmo-dim-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.82);
+            z-index: 950;
+            display: none;
+            pointer-events: none;
+            backdrop-filter: brightness(0.4) contrast(1.2);
+        }
+
+        /* CRT Glass Screen Region */
         #crt-screen {
             position: absolute;
             top: 17.2%;
@@ -45,6 +56,70 @@
             overflow: hidden;
             pointer-events: auto;
             transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        /* Status Indicators Widget (Top Right of CRT Screen) */
+        #status-indicators {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            align-items: flex-end;
+            z-index: 860;
+            pointer-events: none;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 11px;
+            font-weight: 800;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            animation: statusIn 0.2s ease-out;
+        }
+
+        @keyframes statusIn {
+            from { transform: translateX(20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .status-badge.buff {
+            background: rgba(15, 157, 88, 0.85);
+            color: #ffffff;
+            border: 1px solid #00e676;
+        }
+
+        .status-badge.debuff {
+            background: rgba(198, 40, 40, 0.85);
+            color: #ffffff;
+            border: 1px solid #ff5252;
+        }
+
+        .status-circle {
+            transform: rotate(-90deg);
+            width: 14px;
+            height: 14px;
+        }
+
+        .status-circle circle.bg {
+            stroke: rgba(255, 255, 255, 0.25);
+            fill: none;
+            stroke-width: 3;
+        }
+
+        .status-circle circle.fg {
+            stroke: #ffffff;
+            fill: none;
+            stroke-width: 3;
+            stroke-dasharray: 37.7;
+            transition: stroke-dashoffset 0.1s linear;
         }
 
         /* Subtle Shake Effect when render progress >= 95% */
@@ -69,7 +144,7 @@
             to { box-shadow: 0 0 20px #ff9100, inset 0 0 8px #ffffff; }
         }
 
-        /* Scanline CRT FX - Fine 2px Lines, Strictly Inside Glass Screen */
+        /* Scanline CRT FX */
         .scanlines {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -79,7 +154,7 @@
             z-index: 800;
         }
 
-        /* Dynamic Progress Bar - Centered on Corona Window Lower Area */
+        /* Dynamic Progress Bar */
         #render-progress-text {
             position: absolute;
             left: 50%;
@@ -160,7 +235,7 @@
             }
         }
 
-        /* HUD Status Bar - Aligned directly inside the lower Yellow Monitor Bezel Area */
+        /* HUD Status Bar */
         #hud-header {
             position: absolute;
             top: 78.2%;
@@ -193,11 +268,13 @@
         }
         .badge-lvl { background: #ff9800; color: #111; }
         .badge-speed { background: #2e7d32; color: #a5d6a7; }
+        .badge-slow { background: #c62828; color: #ffcdd2; }
+        .badge-boost { background: #00e676; color: #0d2818; }
         .badge-virus { background: #c62828; color: #ffcdd2; }
         .badge-ctrl { background: #0288d1; color: #ffffff; }
         .badge-ctrl:hover { background: #0277bd; }
 
-        /* Google Chat Stacking Area (Bottom Left Multi-Column) */
+        /* Google Chat Container & Fixed 200px Vertical Columns */
         #chat-container {
             position: absolute;
             left: 8px;
@@ -217,6 +294,7 @@
         }
 
         .chat-card {
+            width: 200px;
             flex-shrink: 0;
             pointer-events: auto;
             background: #ffffff;
@@ -241,7 +319,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 9px;
+            font-size: 10px;
             font-weight: bold;
         }
 
@@ -300,7 +378,7 @@
             cursor: pointer;
             flex-grow: 1;
         }
-        .chat-btn-accept:hover { background: #b31412; }
+        .chat-btn-accept:hover { filter: brightness(0.9); }
 
         .chat-btn-decline {
             background: #f1f3f4;
@@ -314,7 +392,7 @@
         }
         .chat-btn-decline:hover { background: #e8eaed; }
 
-        /* Generic Pop-up Windows (Viruses, RAM, Render Nodes, AntiVirus) */
+        /* Generic Pop-up Windows */
         .popup-window {
             position: absolute;
             width: 210px;
@@ -456,7 +534,7 @@
             to { box-shadow: 0 0 15px #00e676; }
         }
 
-        /* Windows Update Toast Notification (Bottom Right inside CRT screen) */
+        /* Windows Update Toast Notification */
         #update-toast {
             position: absolute;
             bottom: 24px;
@@ -544,7 +622,7 @@
             box-shadow: 0 0 20px rgba(255, 152, 0, 0.5);
         }
 
-        /* Overlay Game State Screens - Styled for Viewport & CRT bounds */
+        /* Overlay Game State Screens */
         .overlay-screen {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -557,7 +635,7 @@
             z-index: 1000;
         }
 
-        /* Modal Popups for Game Over Screens (Bounded strictly inside CRT Screen Area) */
+        /* Modal Popups for Game Over Screens */
         .crt-modal-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -584,7 +662,6 @@
             to { transform: scale(1); opacity: 1; }
         }
 
-        /* 1. 3ds Max / Notification Overflow / Malware Crash Popup */
         .max-crash-popup {
             background: #ffffff;
             border: 2px solid #d32f2f;
@@ -671,234 +748,7 @@
             background: #b71c1c;
         }
 
-        /* 2. Windows Update Reboot Modal (Light Blue BSOD Theme) */
-        .win-update-popup {
-            background: #0078d4;
-            border: 2px solid #60cdff;
-            color: #ffffff;
-        }
-
-        .win-update-header {
-            background: #005a9e;
-            color: #ffffff;
-            padding: 6px 10px;
-            font-size: 10px;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        .win-update-body {
-            padding: 12px 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            flex-grow: 1;
-            justify-content: space-between;
-        }
-
-        .win-bsod-face {
-            font-size: 32px;
-            font-weight: 300;
-            line-height: 1;
-            margin-bottom: 4px;
-        }
-
-        .win-update-title {
-            font-size: 11px;
-            font-weight: 800;
-            margin-bottom: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .win-update-desc {
-            font-size: 10px;
-            color: #e0f2fe;
-            line-height: 1.35;
-        }
-
-        .win-update-details {
-            background: rgba(0, 0, 0, 0.22);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            padding: 6px 8px;
-            font-family: monospace;
-            font-size: 9px;
-            color: #f0f9ff;
-            border-radius: 3px;
-            line-height: 1.35;
-        }
-
-        .btn-win-restart {
-            background: #ffffff;
-            color: #0078d4;
-            border: none;
-            padding: 6px 14px;
-            font-weight: bold;
-            font-size: 10px;
-            border-radius: 3px;
-            cursor: pointer;
-            align-self: flex-end;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.2s;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
-        }
-        .btn-win-restart:hover {
-            background: #e0f2fe;
-            color: #005a9e;
-        }
-
-        /* 3. Temporal Collapse Popup (Tavia Timesheet Failure) */
-        .temporal-popup {
-            background: #1a0933;
-            border: 2px solid #a855f7;
-            color: #ffffff;
-        }
-
-        .temporal-header {
-            background: #4c1d95;
-            color: #ffffff;
-            padding: 6px 10px;
-            font-size: 10px;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        .temporal-body {
-            padding: 12px 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            flex-grow: 1;
-            justify-content: space-between;
-        }
-
-        .temporal-title {
-            font-size: 13px;
-            font-weight: 800;
-            color: #c084fc;
-            margin-bottom: 4px;
-            text-transform: uppercase;
-        }
-
-        .temporal-desc {
-            font-size: 10px;
-            color: #e9d5ff;
-            line-height: 1.35;
-        }
-
-        .temporal-details {
-            background: rgba(0, 0, 0, 0.35);
-            border: 1px solid #7e22ce;
-            padding: 6px 8px;
-            font-family: monospace;
-            font-size: 9px;
-            color: #f3e8ff;
-            border-radius: 3px;
-            line-height: 1.35;
-        }
-
-        .btn-temporal-restart {
-            background: #9333ea;
-            color: #ffffff;
-            border: none;
-            padding: 6px 14px;
-            font-weight: bold;
-            font-size: 10px;
-            border-radius: 3px;
-            cursor: pointer;
-            align-self: flex-end;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.2s;
-            box-shadow: 0 3px 8px rgba(147, 51, 234, 0.4);
-        }
-        .btn-temporal-restart:hover {
-            background: #7e22ce;
-        }
-
-        /* 4. Failed Deadline Modal */
-        .deadline-popup {
-            background: #2d0d0d;
-            border: 2px solid #f44336;
-            color: #ffffff;
-        }
-
-        .deadline-header {
-            background: #b71c1c;
-            color: #ffffff;
-            padding: 6px 10px;
-            font-size: 10px;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        .deadline-body {
-            padding: 12px 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            flex-grow: 1;
-            justify-content: space-between;
-        }
-
-        .deadline-title {
-            font-size: 13px;
-            font-weight: 800;
-            color: #ff8a80;
-            margin-bottom: 4px;
-            text-transform: uppercase;
-        }
-
-        .deadline-desc {
-            font-size: 10px;
-            color: #ffebee;
-            line-height: 1.35;
-        }
-
-        .deadline-details {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid #d32f2f;
-            padding: 6px 8px;
-            font-family: monospace;
-            font-size: 9px;
-            color: #ffcdd2;
-            border-radius: 3px;
-            line-height: 1.35;
-        }
-
-        .btn-deadline-restart {
-            background: #f44336;
-            color: #ffffff;
-            border: none;
-            padding: 6px 14px;
-            font-weight: bold;
-            font-size: 10px;
-            border-radius: 3px;
-            cursor: pointer;
-            align-self: flex-end;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.2s;
-            box-shadow: 0 3px 8px rgba(244, 67, 54, 0.4);
-        }
-        .btn-deadline-restart:hover {
-            background: #d32f2f;
-        }
-
-        /* Green Win Pop-up Screen Styling */
+        /* Green Win Pop-up Screen */
         .win-success-popup {
             background: #0d2818;
             border: 2px solid #00e676;
@@ -990,7 +840,7 @@
             transform: translateY(-1px);
         }
 
-        /* Align Start Button over the 3D Render Button in start-bg.jpg */
+        /* Start Button */
         .crt-render-btn {
             position: absolute;
             top: 44.8%;
@@ -1011,29 +861,484 @@
             box-shadow: 0 0 30px rgba(255, 152, 0, 0.7);
         }
 
-        h1 {
-            font-size: 36px;
-            color: #ff9800;
-            margin-bottom: 10px;
-            letter-spacing: 2px;
-            text-shadow: 0 0 15px rgba(255,152,0,0.4);
+        /* ========================================================= */
+        /* MIRANDA BOSS MINIGAME STYLES                              */
+        /* ========================================================= */
+        .miranda-modal-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(4, 5, 8, 0.92);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1200;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        p.desc {
-            font-size: 13px;
-            color: #90a4ae;
-            max-width: 520px;
+        .miranda-popup-window {
+            width: 430px;
+            background: #2b0a0d;
+            border: 2px solid #ff1744;
+            border-radius: 4px;
+            box-shadow: 0 0 35px rgba(255, 23, 68, 0.6), inset 0 0 15px rgba(255, 23, 68, 0.2);
+            color: #e0e6ed;
+            overflow: hidden;
+            animation: bossPopIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            user-select: none;
+        }
+
+        @keyframes bossPopIn {
+            from { transform: scale(0.75); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .miranda-popup-header {
+            background: linear-gradient(90deg, #800d0d, #d32f2f);
+            color: #ffffff;
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: 800;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border-bottom: 2px solid #ff1744;
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+
+        .miranda-close-x {
+            background: #e53935;
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 2px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+            transition: background 0.15s;
+        }
+        .miranda-close-x:hover { background: #b71c1c; }
+
+        .miranda-popup-body {
+            padding: 20px 22px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
-            line-height: 1.6;
-            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .miranda-avatar-badge {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: #d32f2f;
+            color: #fff;
+            font-size: 22px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #ff5252;
+            box-shadow: 0 0 15px rgba(255, 23, 68, 0.8);
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+
+        .miranda-sender {
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #ff5252;
+            font-weight: 800;
+            font-family: 'Consolas', 'Courier New', monospace;
+            text-shadow: 0 0 8px rgba(255, 82, 82, 0.6);
+        }
+
+        .miranda-msg {
+            font-size: 14px;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.35;
+            max-width: 340px;
+        }
+
+        #miranda-disclaimer {
+            font-size: 11px;
+            font-style: italic;
+            color: #ffb74d;
+            margin-top: 2px;
+        }
+
+        .miranda-btn-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            position: relative;
+            width: 100%;
+            height: 50px;
+            margin-top: 4px;
+        }
+
+        .btn-miranda-accept {
+            background: linear-gradient(135deg, #00e676, #0f9d58);
+            color: #05140a;
+            border: 1px solid #a5d6a7;
+            padding: 10px 24px;
+            font-size: 13px;
+            font-weight: 800;
+            border-radius: 3px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            box-shadow: 0 4px 15px rgba(0, 230, 118, 0.4);
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .btn-miranda-accept:hover {
+            transform: scale(1.04);
+            box-shadow: 0 6px 20px rgba(0, 230, 118, 0.7);
+        }
+
+        .btn-miranda-deny {
+            background: #381014;
+            color: #d1d5db;
+            border: 1px solid #7f1d1d;
+            padding: 5px 12px;
+            font-size: 10px;
+            font-weight: bold;
+            border-radius: 3px;
+            cursor: pointer;
+            white-space: nowrap;
+            position: relative;
+            transition: transform 0.08s ease-out, background-color 0.1s, border-color 0.1s;
+            user-select: none;
+        }
+
+        .btn-miranda-deny.error-flash {
+            background: #ff1744 !important;
+            border-color: #ffffff !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 15px #ff1744;
+        }
+
+        @keyframes scaredShake {
+            0% { transform: translate(var(--dx), var(--dy)) rotate(0deg); }
+            25% { transform: translate(calc(var(--dx) + 2px), calc(var(--dy) - 2px)) rotate(-4deg); }
+            50% { transform: translate(calc(var(--dx) - 2px), calc(var(--dy) + 2px)) rotate(4deg); }
+            75% { transform: translate(calc(var(--dx) + 2px), calc(var(--dy) + 2px)) rotate(-2deg); }
+            100% { transform: translate(var(--dx), var(--dy)) rotate(0deg); }
+        }
+
+        .btn-miranda-deny.scared {
+            animation: scaredShake 0.12s infinite;
+            border-color: #ff5252 !important;
+            box-shadow: 0 0 10px rgba(255, 82, 82, 0.9);
+        }
+
+        #miranda-warning-msg {
+            display: none;
+            color: #ff5252;
+            font-size: 11px;
+            font-weight: 800;
+            font-family: 'Consolas', 'Courier New', monospace;
+            letter-spacing: 1px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 4px 8px;
+            border: 1px solid #ff1744;
+            border-radius: 3px;
+            margin-top: 2px;
+            animation: pulseWarning 0.2s alternate infinite;
+        }
+
+        @keyframes pulseWarning {
+            from { box-shadow: 0 0 4px #ff1744; }
+            to { box-shadow: 0 0 12px #ff1744; }
+        }
+
+        /* Victory Pop-up Modal */
+        .miranda-victory-window {
+            width: 440px;
+            background: #082613;
+            border: 2px solid #00e676;
+            border-radius: 4px;
+            box-shadow: 0 0 35px rgba(0, 230, 118, 0.6), inset 0 0 15px rgba(0, 230, 118, 0.2);
+            color: #e8f5e9;
+            overflow: hidden;
+            animation: bossPopIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            user-select: none;
+        }
+
+        .miranda-victory-header {
+            background: linear-gradient(90deg, #0f9d58, #00e676);
+            color: #05140a;
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: 800;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border-bottom: 2px solid #00e676;
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+
+        .miranda-victory-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: #00e676;
+            color: #05140a;
+            font-size: 24px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #b9f6ca;
+            box-shadow: 0 0 15px rgba(0, 230, 118, 0.8);
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+
+        .miranda-victory-sender {
+            font-size: 13px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #00e676;
+            font-weight: 800;
+            font-family: 'Consolas', 'Courier New', monospace;
+            text-shadow: 0 0 10px rgba(0, 230, 118, 0.6);
+        }
+
+        .btn-miranda-win {
+            background: #00e676;
+            color: #05140a;
+            border: none;
+            padding: 10px 28px;
+            font-size: 12px;
+            font-weight: 800;
+            border-radius: 3px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0, 230, 118, 0.5);
+            transition: transform 0.15s, background 0.15s;
+        }
+        .btn-miranda-win:hover {
+            background: #69f0ae;
+            transform: scale(1.04);
+        }
+
+        /* Defeat Pop-up Modal */
+        .miranda-defeat-window {
+            width: 440px;
+            background: #230508;
+            border: 2px solid #ff1744;
+            border-radius: 4px;
+            box-shadow: 0 0 35px rgba(255, 23, 68, 0.7), inset 0 0 15px rgba(255, 23, 68, 0.3);
+            color: #ffebee;
+            overflow: hidden;
+            animation: bossPopIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            user-select: none;
+        }
+
+        .miranda-defeat-header {
+            background: linear-gradient(90deg, #800d0d, #d32f2f);
+            color: #ffffff;
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: 800;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border-bottom: 2px solid #ff1744;
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+
+        .miranda-defeat-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: #d32f2f;
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #ff8a80;
+            box-shadow: 0 0 15px rgba(255, 23, 68, 0.8);
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+
+        .miranda-defeat-sender {
+            font-size: 13px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #ff5252;
+            font-weight: 800;
+            font-family: 'Consolas', 'Courier New', monospace;
+            text-shadow: 0 0 10px rgba(255, 82, 82, 0.6);
+        }
+
+        .btn-miranda-loss {
+            background: #ff1744;
+            color: #ffffff;
+            border: none;
+            padding: 10px 28px;
+            font-size: 12px;
+            font-weight: 800;
+            border-radius: 3px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(255, 23, 68, 0.5);
+            transition: transform 0.15s, background 0.15s;
+        }
+        .btn-miranda-loss:hover {
+            background: #b71c1c;
+            transform: scale(1.04);
+        }
+
+        /* Comments Minigame Area with "minigame.png" background */
+        #comments-minigame-viewport {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #0f1218;
+            display: none;
+            z-index: 1100;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            pointer-events: auto;
+        }
+
+        #render-mockup-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #1a2230 0%, #0a0d12 100%) url('minigame.png') no-repeat center center;
+            background-size: 100% 100%;
+            border: 2px solid #2d3748;
+        }
+
+        .render-wireframe-grid {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 25px 25px;
+        }
+
+        #comments-svg-layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        #comments-hud {
+            position: absolute;
+            top: 10px; left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.92);
+            border: 2px solid #ff1744;
+            border-radius: 6px;
+            padding: 6px 18px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            z-index: 10;
+            box-shadow: 0 0 20px rgba(255, 23, 68, 0.5);
+        }
+
+        .comments-hud-stat {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 13px;
+            font-weight: 800;
+            color: #ffffff;
+        }
+        .comments-hud-stat span { color: #ff5252; }
+
+        .comment-card {
+            position: absolute;
+            background: #ffffff;
+            color: #1a202c;
+            padding: 5px 9px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+            border-left: 4px solid #ff1744;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 5;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+            transition: opacity 0.2s, transform 0.15s;
+        }
+
+        .comment-card.dramatic {
+            border-left-color: #d32f2f;
+            background: #fff5f5;
+            color: #9b2c2c;
+            font-weight: 800;
+        }
+
+        .comment-card:hover {
+            border-left-color: #00e676;
+        }
+
+        .comment-checkbox {
+            width: 14px;
+            height: 14px;
+            border: 2px solid #4a5568;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            background: #edf2f7;
+            font-size: 10px;
+        }
+
+        .comment-card.checked {
+            opacity: 0;
+            transform: scale(0.5);
+            pointer-events: none;
+        }
+
+        .render-target-pin {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #ff1744;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px #ff1744;
+            z-index: 3;
         }
     </style>
 </head>
 <body>
 
 <div id="game-viewport">
+    <!-- Dedicated Slow-Mo Dim Overlay (Sits behind modals) -->
+    <div id="slowmo-dim-overlay"></div>
+
     <!-- CRT Display Overlay Layer -->
     <div id="crt-screen">
+        <!-- Top Right Buff/Penalty Status Indicators -->
+        <div id="status-indicators"></div>
+
         <!-- Dynamic Progress Over Corona Window -->
         <div id="render-progress-text">Render Progress: <span id="progress-val">0%</span></div>
         <div id="render-progress-container">
@@ -1041,11 +1346,12 @@
         </div>
 
         <!-- Taskbar Deadline Clock Timer -->
-        <div id="taskbar-clock">02:00</div>
+        <div id="taskbar-clock">02:30</div>
 
-        <!-- Google Chat Multi-Column Container (Bottom Left) -->
+        <!-- Google Chat Multi-Column Container (Fixed 200px Columns) -->
         <div id="chat-container">
             <div id="chat-stack-left" class="chat-column"></div>
+            <div id="chat-stack-mid" class="chat-column"></div>
             <div id="chat-stack-right" class="chat-column"></div>
         </div>
 
@@ -1095,7 +1401,7 @@
             </div>
         </div>
 
-        <!-- Hidden Track Hours Button (Spawns during Tavia reverse time) -->
+        <!-- Hidden Track Hours Button -->
         <button id="track-hours-btn" style="display:none;" onclick="openTimesheetMinigame()">TRACK MY HOURS</button>
 
         <!-- Pause Overlay -->
@@ -1103,10 +1409,8 @@
             <div class="pause-box">PAUSED</div>
         </div>
 
-        <!-- Game Over CRT Modals Layer (Rendered strictly inside CRT Monitor Glass) -->
+        <!-- Game Over CRT Modals Layer -->
         <div id="crt-modal-layer" class="crt-modal-overlay" style="display:none;">
-            
-            <!-- 3ds Max / Notification Overflow / Malware Crash Popup -->
             <div id="max-crash-modal" class="modal-popup max-crash-popup" style="display:none;">
                 <div class="max-crash-header">
                     <span id="max-crash-header-title">3DSMAX.EXE - APPLICATION ERROR</span>
@@ -1128,75 +1432,13 @@
                     <button class="btn-max-restart" onclick="restartGame()">RESTART 3DS MAX</button>
                 </div>
             </div>
-
-            <!-- Windows Update Reboot Popup (Light Blue BSOD Theme) -->
-            <div id="win-update-modal" class="modal-popup win-update-popup" style="display:none;">
-                <div class="win-update-header">
-                    <span>WINDOWS SYSTEM UPDATE</span>
-                    <span style="font-size:12px; cursor:pointer;" onclick="restartGame()">✕</span>
-                </div>
-                <div class="win-update-body">
-                    <div>
-                        <div class="win-bsod-face">:(</div>
-                        <div class="win-update-title">UPDATING WINDOWS: UNSAVED WORK DESTROYED</div>
-                        <div class="win-update-desc" id="win-fail-reason">Your OS detected peak productivity and initiated a critical reboot to update a bluetooth printer driver. Because you didn't save, your PC concluded your work was a collective hallucination and erased it from existence.</div>
-                    </div>
-                    <div class="win-update-details">
-                        STOP CODE: WINDOWS_UPDATE_FORCED_REBOOT<br>
-                        REBOOT PROGRESS: 100% COMPLETE<br>
-                        STATUS: ALL UNSAVED WORK AND RENDER PROGRESS LOST
-                    </div>
-                    <button class="btn-win-restart" onclick="restartGame()">REBOOT SYSTEM & RETRY</button>
-                </div>
-            </div>
-
-            <!-- Temporal Collapse Popup (Tavia Timesheet Failure) -->
-            <div id="temporal-modal" class="modal-popup temporal-popup" style="display:none;">
-                <div class="temporal-header">
-                    <span>TEMPORAL CONTINUUM ERROR</span>
-                    <span style="font-size:12px; cursor:pointer;" onclick="restartGame()">✕</span>
-                </div>
-                <div class="temporal-body">
-                    <div>
-                        <div class="temporal-title">TEMPORAL COLLAPSE!</div>
-                        <div class="temporal-desc" id="temporal-fail-reason">Because you failed to log your hours, the universe could not verify your physical existence. Accounting has confiscated your past, present and future.</div>
-                    </div>
-                    <div class="temporal-details">
-                        STATUS: UNACCOUNTED TIME PARADOX<br>
-                        TIMELINE: DELETED BY ACCOUNTING DEPARTMENT<br>
-                        PHYSICAL EXISTENCE: REVOKED
-                    </div>
-                    <button class="btn-temporal-restart" onclick="restartGame()">TRY AGAIN</button>
-                </div>
-            </div>
-
-            <!-- Failed Deadline Popup -->
-            <div id="deadline-modal" class="modal-popup deadline-popup" style="display:none;">
-                <div class="deadline-header">
-                    <span>CRITICAL DEADLINE FAILURE</span>
-                    <span style="font-size:12px; cursor:pointer;" onclick="restartGame()">✕</span>
-                </div>
-                <div class="deadline-body">
-                    <div>
-                        <div class="deadline-title">FAILED DEADLINE</div>
-                        <div class="deadline-desc" id="deadline-fail-reason">You missed the window. The client didn't just cancel the contract. They legally bought the rights to your name and rebranded you as "The Failure". Your desk was reduced to ashes.</div>
-                    </div>
-                    <div class="deadline-details">
-                        STATUS: CONTRACT TERMINATED<br>
-                        CLIENT ACTION: LEGAL NAME REBRAND EXECUTED<br>
-                        WORKSTATION STATUS: REDUCED TO ASHES
-                    </div>
-                    <button class="btn-deadline-restart" onclick="restartGame()">TRY AGAIN</button>
-                </div>
-            </div>
-
         </div>
 
-        <!-- Scanlines layer renders ON TOP of all in-screen elements inside CRT glass -->
+        <!-- Scanlines layer -->
         <div class="scanlines"></div>
     </div>
 
-    <!-- HUD Header - Aligned directly inside the lower Yellow Monitor Bezel Area -->
+    <!-- HUD Header -->
     <div id="hud-header">
         <div><span class="hud-badge badge-lvl" id="lvl-badge">LEVEL 0</span></div>
         <div>SPEED: <span class="hud-badge badge-speed" id="speed-badge">100%</span></div>
@@ -1206,12 +1448,12 @@
         <button class="hud-badge badge-ctrl" id="music-btn" onclick="toggleMusic()">MUSIC: ON</button>
     </div>
 
-    <!-- Start Overlay (100% size of #game-viewport) -->
+    <!-- Start Overlay -->
     <div id="start-screen" class="overlay-screen">
         <button class="crt-render-btn" onclick="startGame()" title="Click to Start Render"></button>
     </div>
 
-    <!-- Win Overlay - Styled as Green 3ds Max / Windows Update Crash Popup -->
+    <!-- Win Overlay -->
     <div id="win-screen" class="overlay-screen" style="display:none; background-color: rgba(4, 20, 10, 0.92); background-image: none;">
         <div class="modal-popup win-success-popup">
             <div class="win-success-header">
@@ -1237,17 +1479,164 @@
             </div>
         </div>
     </div>
+
+    <!-- ==================== MIRANDA BOSS MINIGAME OVERLAYS ==================== -->
+    
+    <!-- Initial Miranda Boss Popup -->
+    <div id="miranda-boss-overlay" class="miranda-modal-overlay" style="display:none;" onmousemove="handleDenyEvasion(event)">
+        <div class="miranda-popup-window">
+            <div class="miranda-popup-header">
+                <span>⚔ FINAL BOSS: MIRANDA ROMER</span>
+                <div class="miranda-close-x" onclick="handleMirandaCloseClick(event)">✕</div>
+            </div>
+            <div class="miranda-popup-body">
+                <div class="miranda-avatar-badge">M</div>
+                <div class="miranda-sender">MIRANDA ROMER</div>
+                <div class="miranda-msg">"So sorry, but I have just a few more comments"</div>
+                
+                <div id="miranda-disclaimer">
+                    "Don't worry, it's not gonna be that bad... right?"
+                </div>
+
+                <div id="miranda-warning-msg">THERE IS NO ESCAPE FROM MIRANDA</div>
+
+                <div class="miranda-btn-container" id="miranda-btn-box">
+                    <button class="btn-miranda-accept" onclick="acceptMirandaComments()">ACCEPT</button>
+                    <button class="btn-miranda-deny" id="miranda-deny-btn" onclick="handleDenyClick(event)">Deny</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Miranda Victory Popup -->
+    <div id="miranda-victory-overlay" class="miranda-modal-overlay" style="display: none;">
+        <div class="miranda-victory-window">
+            <div class="miranda-victory-header">
+                <span>✔ RENDER APPROVED - MIRANDA ROMER</span>
+                <div class="miranda-close-x" style="background:#0f9d58;" onclick="closeVictoryModal()">✕</div>
+            </div>
+            <div class="miranda-popup-body">
+                <div class="miranda-victory-avatar">😊</div>
+                <div class="miranda-victory-sender">MIRANDA HAS SMILED</div>
+                <div class="miranda-msg">
+                    She opened your file, paused, and slowly nodded in a subtle approval, saying the magical words: 
+                    <br><strong style="color:#00e676; font-size:16px;">"it's okay"</strong>
+                </div>
+                
+                <button class="btn-miranda-win" onclick="closeVictoryModal()">CLAIM VICTORY</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Miranda Defeat Popup -->
+    <div id="miranda-defeat-overlay" class="miranda-modal-overlay" style="display: none;">
+        <div class="miranda-defeat-window">
+            <div class="miranda-defeat-header">
+                <span>💀 CRITICAL REVISION FAILURE - MIRANDA ROMER</span>
+                <div class="miranda-close-x" onclick="closeDefeatModal()">✕</div>
+            </div>
+            <div class="miranda-popup-body">
+                <div class="miranda-defeat-avatar">💀</div>
+                <div class="miranda-defeat-sender">CREATIVE CONDEMNATION</div>
+                <div class="miranda-msg">
+                    You failed to satisfy Miranda. With a single shake of her head, she opened a portal that sent you to the 
+                    <strong style="color:#ff5252;">Revision Purgatory</strong> for eternity.
+                </div>
+                
+                <button class="btn-miranda-loss" onclick="closeDefeatModal()">ACCEPT FATE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comments Minigame Viewport -->
+    <div id="comments-minigame-viewport">
+        <div id="render-mockup-bg">
+            <div class="render-wireframe-grid"></div>
+            <div id="target-pins-container"></div>
+        </div>
+
+        <svg id="comments-svg-layer"></svg>
+
+        <div id="comments-hud">
+            <div class="comments-hud-stat">TIME LEFT: <span id="comments-timer">45.0s</span></div>
+            <div class="comments-hud-stat">REVISIONS LEFT: <span id="comments-count">0 / 0</span></div>
+        </div>
+
+        <div id="comment-cards-container"></div>
+    </div>
 </div>
 
 <script>
-    // Game State & Configuration
+    // =========================================================
+    // LEVEL CHAT MESSAGE POOLS & CONFIGURATIONS
+    // =========================================================
+    const LEVEL_0_MESSAGES = [
+        { name: "Phoebe Duckworth", msg: "HelloOoO Hope you are feeling fabulous today :)" },
+        { name: "Sarah Cope", msg: "Good morning, such a lovely day isn't it?" },
+        { name: "Eli Perret", msg: "Hola, todo bien?" },
+        { name: "Nataliia Tyarenko", msg: "Hi ^_^ How's your day going?" }
+    ];
+
+    const LEVEL_1_JOKES = [
+        { name: "Sarah Cope", msg: "Any updates on that image?" },
+        { name: "Eli Perret", msg: "When do you expect to finish that render?" },
+        { name: "Phoebe Duckworth", msg: "How are you tracking with that image? No rush" },
+        { name: "Andrei Dolnikov", msg: "Did you watch the latest NINJO video? You should" },
+        { name: "Andrei Dolnikov", msg: "Did I mention how good the latest NINJO video was?" },
+        { name: "Marta Paterlini", msg: "Hello, I would like to send that out today" },
+        { name: "Eli Perret", msg: "Any news on that image? No rush" }
+    ];
+
+    const LEVEL_1_ACTIONS = [
+        { name: "Nadia Monte", msg: "Can I get a picture of your desk? It's for a game :)", action: 'nadia_desk' },
+        { name: "Maciej Kozlowski", msg: "This is looking great, Approved on my end :)", action: 'maciej' }
+    ];
+
+    const LEVEL_2_JOKES = [
+        { name: "Sarah Cope", msg: "Can you wrap this up in the next 12 seconds?" },
+        { name: "Matthew Charter", msg: "There's a 2Tb folder with your name in the S Drive..." },
+        { name: "Eli Perret", msg: "I need to send this right now, gotta go skiing in 10 min" },
+        { name: "Eli Perret", msg: "Cmon! Clock's ticking!!" },
+        { name: "Andrei Dolnikov", msg: "Did I mention the new video from NINJO?" },
+        { name: "Phoebe Duckworth", msg: "Time is running up!" },
+        { name: "Eli Perret", msg: "YO! ARE YOU EVEN THERE??" },
+        { name: "Tavia Hunter", msg: "YOU NEED TO UPDATE YOUR TIMESHEETS" },
+        { name: "Tavia Hunter", msg: "Please track your hours..." }
+    ];
+
+    const LEVEL_2_ACTIONS = [
+        { name: "Giada Filippetti", msg: "Could you upload that scene for me?", action: 'giada' },
+        { name: "Felipe Broering", msg: "You haven't uploaded a single image to Trello", action: 'felipe' },
+        { name: "Arnon Rodrigues", msg: "I need you brick material, can you save selected?", action: 'arnon' }
+    ];
+
+    const LEVEL_3_JOKES = [
+        { name: "Bec Byrne", msg: "WE ARE GONNA LOSE THE CLIENT!" },
+        { name: "Cassidy Storms", msg: "HOW CAN YOU BE SO SLOW??" },
+        { name: "Bec Byrne", msg: "I NEED THAT IMAGE RIGHT NOW" },
+        { name: "Bec Byrne", msg: "PLEASE HURRY UP EVERYTHING IS ON FIRE!" },
+        { name: "Eli Perret", msg: "THIS IS LITERALLY LIFE OR DEATH" },
+        { name: "Cassidy Storms", msg: "THE WHOLE WORLD DEPENDS ON THIS DELIVERY" },
+        { name: "Phoebe Duckworth", msg: "THE SKY IS FALLING!" },
+        { name: "Matthew Charter", msg: "It was nice knowing you..." },
+        { name: "Eli Perret", msg: "HELP!" }
+    ];
+
+    const LEVEL_3_ACTIONS = [
+        { name: "Bec Byrne", msg: "We just got a new pdf with 200 comments", action: 'bec_comments' },
+        { name: "Bartosz Grochulski", msg: "You are using the wrong model...", action: 'bartosz' }
+    ];
+
+    const allChatPool = [...LEVEL_0_MESSAGES, ...LEVEL_1_JOKES, ...LEVEL_2_JOKES, ...LEVEL_3_JOKES];
+
+    // Main Game State Variables
     let gameState = 'MENU';
     let isPaused = false;
     let isMusicMuted = false;
     let currentLevel = 0;
 
     let renderProgress = 0;
-    const baseSpeed = 0.05; // 2000 ticks = 100s base
+    const baseSpeed = 0.05;
     
     let activeViruses = [];
     let pendingVirusTimers = {};
@@ -1257,51 +1646,52 @@
     let virusSpawnMultiplier = 1;
     let virus3xTimer = 0;
 
-    let pauseTimer = 0;            // Render pause duration in ticks
-    let slow25Timer = 0;           // 25% speed penalty duration
-    let slow50Timer = 0;           // 50% speed penalty duration (15s = 300 ticks)
-    let renderNodeBoost = 0;       // Permanent +10% per node
+    let pauseTimer = 0;            
+    let slow25Timer = 0;           
+    let slow50Timer = 0;           
+    let renderNodeBoost = 0;       
     let ramUpgradesSpawned = 0;
 
-    // Speed Boost Timers & Permanent Flags
-    let dismissBoostTimer = 0;     // 10% speed boost for 3s (60 ticks) on chat dismiss
-    let archiveBoostTimer = 0;     // 25% speed boost for 10s (200 ticks) after archive/save actions
-    let maciejBoostTimer = 0;      // 5% speed boost for 5s (100 ticks) on Maciej "Thank you"
-    let permL3BoostActive = false; // 1.75x permanent boost after Level 3 revision comments
-    let l3RevisionTriggered = false; // Either Bec or Miranda or Bartosz revision, not both/all!
-    let level3ActionSpawned = false; // Guaranteed strict limit: strictly MAX 1 Level 3 action per game!
-    let currentRoundL3Action = null; // Dynamically picked per round for equal 1/3 probability
-    let taviaSpawned = false;        // Guaranteed Tavia Hunter timesheets trigger in Level 2
-    let hasTriggeredRevision = false; // Prevents Level 0/1 messages after Level 3 progress drain!
+    let dismissBoostTimer = 0;     
+    let archiveBoostTimer = 0;     
+    let maciejBoostTimer = 0;      
+    let permL3BoostActive = false; 
+    let l3RevisionTriggered = false; 
+    let level3ActionSpawned = false; 
+    let currentRoundL3Action = null; 
+    let taviaSpawned = false;        
+    let hasTriggeredRevision = false; 
 
-    // Pop-up Positioning Grid Offset Counter & Antivirus Timer
+    // Level Action Trackers
+    let level1ActionsSpawned = 0;
+    let level2ActionsSpawned = 0;
+    let level2ActionsSelected = [];
+
+    // Level 0 Spawning Tracker
+    let level0SpawnedCount = 0;
+    let level0TargetCount = 3;
+
+    // Level 4 & Miranda Boss Flags
+    let bossTriggered = false;
+    let bossDefeated = false;
+    let level4SpawnTimer = 0;
+    let isSlowMoTransition = false;
+
     let popupOffsetIndex = 0;
     let antivirusTimer = 0;
 
-    // Level 0 Spawning Flags
-    let l0Msg1Spawned = false;
-    let l0Msg2Spawned = false;
-
-    // Tavia Reverse Time State
     let isReverseTime = false;
-
-    // Spreadsheet Minigame Data
     let timesheetDaysData = [];
-
-    // Comment Draining Catch-up Speed State (12x Speed)
     let catchUpMultiplier = 1.0;
 
-    // Windows Update State
     let isUpdateActive = false;
     let updateCountdown = 10;
     let updateIntervalId = null;
 
-    // Dynamic "Tension" Deadline Clock State
-    let deadlineTimeSec = 120;
-    let targetEndSec = 5; // Randomized target finish time (2-7s)
+    let deadlineTimeSec = 150; 
+    let targetEndSec = 5; 
     let deadlineTickCounter = 0;
 
-    // Event Timers (20 ticks/sec)
     let gameIntervalId = null;
     let chatTimer = 0;
     let virusTimer = 0;
@@ -1309,280 +1699,249 @@
     let nodeTimer = 0;
     let updateSpawnTimer = 0;
 
-    // Used Messages Tracking
     const usedMessages = new Set();
 
-    // Chat Message Databases
-    const level0Jokes = [
-        { name: "Phoebe Duckworth", msg: "Hey hey heyy, hope your are feeling fabuloOoOOous today:D" },
-        { name: "Sarah Cope", msg: "Hello :D it’s sunny outside" },
-        { name: "Phoebe Duckworth", msg: "HelloOoO HellooOOooo" },
-        { name: "Eli Perret", msg: "Sup?" }
-    ];
-
-    const level1Jokes = [
-        { name: "Sarah Cope", msg: "Hey, any update on that image?" },
-        { name: "Andrei Dolnikov", msg: "Did you watch the latest NINJO video? IT'S AWESOME!" },
-        { name: "Andrei Dolnikov", msg: "Please watch the NINJO video…" },
-        { name: "Alexandre Castro", msg: "Your materials look amazing! What’s the secret?" },
-        { name: "Nataliia Tyarenko", msg: "Hi ^_^  ♥ How’s your day going?" }
-    ];
-
-    const level1Actions = [
-        { name: "Nadia Monte", msg: "Can I get a picture of your desk? :)", action: 'nadia_desk' },
-        { name: "Maciej Kozlowski", msg: "Looking great! Approved :)", action: 'maciej' }
-    ];
-
-    const level2Jokes = [
-        { name: "Sarah Cope", msg: "Hi. Do you think you can wrap this up in the next 11 seconds?" },
-        { name: "Matthew Charter", msg: "Color folder looking a little empty!" },
-        { name: "Matthew Charter", msg: "There’s a 2TB folder with your name on the S Drive…" },
-        { name: "Eli Perret", msg: "We need this ASAP, gotta go skiing in 10 min" },
-        { name: "Andrei Dolnikov", msg: "Did I mention the new video from NINJO?" },
-        { name: "Eli Perret", msg: "Clock’s ticking!" },
-        { name: "Eli Perret", msg: "YO! ARE YOU EVEN THERE?" }
-    ];
-
-    const level2Actions = [
-        { name: "Eli Perret", msg: "Hey wanna go skateboard?", action: 'eli_skate' },
-        { name: "Giada Filippetti", msg: "Can you upload your scene? :)", action: 'giada' },
-        { name: "Nadia Monte", msg: "Could you please archive your scene for me? :D", action: 'nadia_archive' },
-        { name: "Felipe Broering", msg: "You haven’t uploaded anything to Trello for the past 6 months", action: 'felipe' },
-        { name: "Arnon Rodrigues", msg: "I need a lamp from your scene, can you save it for me?", action: 'arnon' }
-    ];
-
-    const level3Jokes = [
-        { name: "Bec Byrne", msg: "WE ARE GONNA LOSE THE CLIENT!" },
-        { name: "Cassidy Storms", msg: "HOW CAN YOU BE SO SLOW???" },
-        { name: "Bec Byrne", msg: "I NEED THAT IMAGE RIGHT NOW" },
-        { name: "Bec Byrne", msg: "PLEASE HURRY UP EVERYTHING IS ON FIRE!" },
-        { name: "Tavia Hunter", msg: "YOU ARE NOT TRACKING YOUR HOURS AGAIN!?" },
-        { name: "Tavia Hunter", msg: "IF YOU DON’T UPDATE YOUR TIMESHEETS RIGHT NOW I SWEAR I’M GONNA…" },
-        { name: "Marta Paterlini", msg: "MY WHOLE LIFE DEPENDS ON THIS DELIVERY" }
-    ];
-
-    const level3Actions = [
-        { name: "Miranda Romer", msg: "Sorry, but I actually have a few more comments", action: 'miranda' },
-        { name: "Bec Byrne", msg: "The client just sent a pdf with 200 comments", action: 'bec_comments' },
-        { name: "Bartosz Grochulski", msg: "You have been using the wrong model...", action: 'bartosz' }
-    ];
-
-    // --- WEB AUDIO ENGINE & MUSIC TRACKS ---
+    // --- WEB AUDIO ENGINE ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     let musicIntervalId = null;
     let startMusicIntervalId = null;
     let startMusicStep = 0;
     let gameMusicStep = 0;
 
-    // Convert MIDI Note to Hz Frequency
     function midiToFreq(note) {
         return 440 * Math.pow(2, (note - 69) / 12);
     }
 
-    // 1. INTRO MUSIC TRACK: Chill Study Lo-Fi Electric Piano (Relaxed ~75 BPM)
     const lofiChords = [
-        [50, 57, 60, 65], // Dm7
-        [43, 53, 59, 65], // G7
-        [48, 55, 59, 62], // Cmaj7
-        [45, 52, 55, 60]  // Am7
+        [50, 57, 60, 65],
+        [43, 53, 59, 65],
+        [48, 55, 59, 62],
+        [45, 52, 55, 60]
     ];
 
     function playStartMusicTick() {
         if (isMusicMuted || gameState !== 'MENU') return;
-        if (audioCtx.state === 'suspended') audioCtx.resume();
+        try {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
 
-        // 8 steps (8th notes) per chord progression
-        const chordIndex = Math.floor(startMusicStep / 8) % lofiChords.length;
-        const currentChord = lofiChords[chordIndex];
+            const chordIndex = Math.floor(startMusicStep / 8) % lofiChords.length;
+            const currentChord = lofiChords[chordIndex];
+            const isPulse = (startMusicStep % 2 === 0);
+            const velocity = isPulse ? 0.20 : 0.08;
 
-        // Rhythm pulse
-        const isPulse = (startMusicStep % 2 === 0);
-        const velocity = isPulse ? 0.20 : 0.08;
+            if (velocity > 0) {
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(680, audioCtx.currentTime);
 
-        if (velocity > 0) {
-            // Muffled Low-Pass Filter for warm, cozy Lo-Fi sound
-            const filter = audioCtx.createBiquadFilter();
-            filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(680, audioCtx.currentTime);
-            filter.Q.setValueAtTime(1.5, audioCtx.currentTime);
+                const masterGain = audioCtx.createGain();
+                masterGain.gain.setValueAtTime(velocity, audioCtx.currentTime);
+                filter.connect(masterGain);
+                masterGain.connect(audioCtx.destination);
 
-            const masterGain = audioCtx.createGain();
-            masterGain.gain.setValueAtTime(velocity, audioCtx.currentTime);
+                currentChord.forEach(note => {
+                    const osc = audioCtx.createOscillator();
+                    osc.type = 'triangle';
+                    osc.detune.setValueAtTime((Math.random() - 0.5) * 18, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(midiToFreq(note), audioCtx.currentTime);
 
-            filter.connect(masterGain);
-            masterGain.connect(audioCtx.destination);
+                    const gain = audioCtx.createGain();
+                    gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.25, audioCtx.currentTime + 0.04);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
 
-            currentChord.forEach(note => {
-                const osc = audioCtx.createOscillator();
-                osc.type = 'triangle'; // Smooth Rhodes piano texture
-
-                // Tape Wow / Flutter Detune for retro cassette warm wobble
-                osc.detune.setValueAtTime((Math.random() - 0.5) * 18, audioCtx.currentTime);
-                osc.frequency.setValueAtTime(midiToFreq(note), audioCtx.currentTime);
-
-                const gain = audioCtx.createGain();
-                gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-                gain.gain.linearRampToValueAtTime(0.25, audioCtx.currentTime + 0.04);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
-
-                osc.connect(gain);
-                gain.connect(filter);
-
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.38);
-            });
-        }
-
-        startMusicStep++;
+                    osc.connect(gain);
+                    gain.connect(filter);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.38);
+                });
+            }
+            startMusicStep++;
+        } catch(e) { console.log("Start music tick error:", e); }
     }
 
-    // 2. MAIN GAMEPLAY MUSIC TRACK: Stressful System Glitch (Starts slow, accelerates to 3.5x)
     const glitchNotes = [349.23, 493.88, 349.23, 493.88, 369.99, 523.25];
+    const postBossVictoryNotes = [523.25, 659.25, 783.99, 880.00, 1046.50];
 
     function playMusicTick() {
-        if (isMusicMuted || gameState !== 'PLAYING' || isPaused) return;
-        if (audioCtx.state === 'suspended') audioCtx.resume();
+        if (isMusicMuted || gameState !== 'PLAYING') return;
+        if (isPaused && !isSlowMoTransition) return;
+        try {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
 
-        const baseFreq = glitchNotes[gameMusicStep % glitchNotes.length];
-        
-        // Speed Multiplier scales up smoothly from 1.0x up to 3.5x as render progress fills!
-        let progressSpeedRatio = 1.0 + (renderProgress / 100) * 2.0; 
-        if (renderProgress >= 95) {
-            progressSpeedRatio += 0.8; // Spikes speed beyond 95%!
-        }
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
 
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
+            if (bossDefeated) {
+                osc.type = 'triangle';
+                const freq = postBossVictoryNotes[gameMusicStep % postBossVictoryNotes.length];
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
 
-        osc.type = 'sawtooth'; // Biting 8-bit digital glitch wave
+                gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
 
-        // Add chaotic pitch jitter when progress is beyond 95%
-        let currentFreq = baseFreq;
-        if (renderProgress >= 95) {
-            currentFreq += (Math.random() - 0.5) * 35;
-        }
-        osc.frequency.setValueAtTime(currentFreq, audioCtx.currentTime);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.32);
 
-        const stepDuration = Math.max(0.04, 0.22 / progressSpeedRatio);
+                gameMusicStep++;
+                clearInterval(musicIntervalId);
+                musicIntervalId = setInterval(playMusicTick, 200);
+                return;
+            }
 
-        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + stepDuration * 0.85);
+            if (isSlowMoTransition) {
+                osc.type = 'sawtooth';
+                const lowFreq = 80 + (Math.random() * 40);
+                osc.frequency.setValueAtTime(lowFreq, audioCtx.currentTime);
 
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
+                gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.7);
 
-        osc.start();
-        osc.stop(audioCtx.currentTime + stepDuration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.75);
 
-        gameMusicStep++;
+                clearInterval(musicIntervalId);
+                musicIntervalId = setInterval(playMusicTick, 650);
+                return;
+            }
 
-        // Dynamic Tempo Acceleration: Starts around 320ms interval and speeds up to ~80ms
-        const nextDelay = Math.max(80, Math.floor(320 / progressSpeedRatio));
+            const baseFreq = glitchNotes[gameMusicStep % glitchNotes.length];
+            let progressSpeedRatio = 1.0 + (renderProgress / 100) * 2.0; 
+            if (renderProgress >= 90) progressSpeedRatio += 0.8;
 
-        clearInterval(musicIntervalId);
-        musicIntervalId = setInterval(playMusicTick, nextDelay);
+            osc.type = 'sawtooth';
+            let currentFreq = baseFreq;
+            if (renderProgress >= 90) currentFreq += (Math.random() - 0.5) * 35;
+            osc.frequency.setValueAtTime(currentFreq, audioCtx.currentTime);
+
+            const stepDuration = Math.max(0.04, 0.22 / progressSpeedRatio);
+
+            gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + stepDuration * 0.85);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + stepDuration);
+
+            gameMusicStep++;
+            const nextDelay = Math.max(80, Math.floor(320 / progressSpeedRatio));
+
+            clearInterval(musicIntervalId);
+            musicIntervalId = setInterval(playMusicTick, nextDelay);
+        } catch(e) { console.log("Gameplay music tick error:", e); }
     }
 
-    // Standard Game UI Sound Effects
     function playSound(type) {
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
+        try {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
 
-        if (type === 'chat') {
-            osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
-            osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.08);
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.2);
-        } else if (type === 'virus') {
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(200, audioCtx.currentTime);
-            osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.2);
-            gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.2);
-        } else if (type === 'boost') {
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(440, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.25);
-            gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.25);
-        } else if (type === 'reset') {
-            osc.type = 'square';
-            osc.frequency.setValueAtTime(300, audioCtx.currentTime);
-            osc.frequency.linearRampToValueAtTime(80, audioCtx.currentTime + 0.4);
-            gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.4);
-        } else if (type === 'render_click') {
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(220, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.3);
-            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.3);
-        } else if (type === 'reverse') {
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-            osc.frequency.linearRampToValueAtTime(450, audioCtx.currentTime + 0.3);
-            gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.3);
-        } else if (type === 'pause') {
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(400, audioCtx.currentTime);
-            osc.frequency.linearRampToValueAtTime(250, audioCtx.currentTime + 0.15);
-            gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.15);
-        } else if (type === 'resume') {
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(250, audioCtx.currentTime);
-            osc.frequency.linearRampToValueAtTime(500, audioCtx.currentTime + 0.15);
-            gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.15);
-        }
+            if (type === 'chat') {
+                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.08);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+            } else if (type === 'virus') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.2);
+                gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+            } else if (type === 'boost') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.25);
+                gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.25);
+            } else if (type === 'reset') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(80, audioCtx.currentTime + 0.4);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.4);
+            } else if (type === 'render_click') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+            } else if (type === 'reverse') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(450, audioCtx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+            } else if (type === 'pause') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(250, audioCtx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.15);
+            } else if (type === 'resume') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(250, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(500, audioCtx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.15);
+            }
+        } catch(e) { console.log("Sound FX error:", e); }
     }
 
     function playWinMusic() {
         if (isMusicMuted) return;
-        const notes = [523.25, 659.25, 783.99, 1046.50];
-        notes.forEach((freq, idx) => {
-            setTimeout(() => {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.4);
-            }, idx * 120);
-        });
+        try {
+            const notes = [523.25, 659.25, 783.99, 1046.50];
+            notes.forEach((freq, idx) => {
+                setTimeout(() => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+                    osc.start(); osc.stop(audioCtx.currentTime + 0.4);
+                }, idx * 120);
+            });
+        } catch(e) { console.log("Win music error:", e); }
     }
 
     function playLossMusic() {
         if (isMusicMuted) return;
-        const notes = [400, 350, 300, 200];
-        notes.forEach((freq, idx) => {
-            setTimeout(() => {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.35);
-            }, idx * 140);
-        });
+        try {
+            const notes = [400, 350, 300, 200];
+            notes.forEach((freq, idx) => {
+                setTimeout(() => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+                    osc.start(); osc.stop(audioCtx.currentTime + 0.35);
+                }, idx * 140);
+            });
+        } catch(e) { console.log("Loss music error:", e); }
     }
 
     function toggleMusic() {
@@ -1604,7 +1963,6 @@
         overlay.style.display = isPaused ? 'flex' : 'none';
     }
 
-    // Format MM:SS for Deadline Clock with Color Updates
     function updateClockDisplay() {
         const m = Math.floor(deadlineTimeSec / 60).toString().padStart(2, '0');
         const s = (deadlineTimeSec % 60).toString().padStart(2, '0');
@@ -1622,17 +1980,15 @@
         }
     }
 
-    // Start Game
     function startGame() {
         playSound('render_click');
         clearInterval(startMusicIntervalId);
 
         gameState = 'PLAYING';
         isPaused = false;
-        currentLevel = 0; // Starts at Level 0 for first 10%
+        currentLevel = 0; 
         renderProgress = 0;
         
-        // Reset Virus pending timers
         for (let tid in pendingVirusTimers) {
             clearInterval(pendingVirusTimers[tid]);
         }
@@ -1656,24 +2012,31 @@
         permL3BoostActive = false;
         l3RevisionTriggered = false;
         level3ActionSpawned = false; 
-        taviaSpawned = false;        // Reset Tavia guaranteed flag
+        taviaSpawned = false;        
         hasTriggeredRevision = false;
 
-        // Pick 1 Random Level 3 Action for this round (1/3 probability each)
-        currentRoundL3Action = level3Actions[Math.floor(Math.random() * level3Actions.length)];
+        level1ActionsSpawned = 0;
+        level2ActionsSpawned = 0;
+        level2ActionsSelected = [...LEVEL_2_ACTIONS].sort(() => 0.5 - Math.random()).slice(0, 2);
+
+        level0SpawnedCount = 0;
+        level0TargetCount = Math.floor(Math.random() * 2) + 2; 
+
+        bossTriggered = false;
+        bossDefeated = false;
+        level4SpawnTimer = 0;
+        isSlowMoTransition = false;
+
+        currentRoundL3Action = LEVEL_3_ACTIONS[Math.floor(Math.random() * LEVEL_3_ACTIONS.length)];
 
         popupOffsetIndex = 0;
         antivirusTimer = 0;
 
-        l0Msg1Spawned = false;
-        l0Msg2Spawned = false;
-
         isReverseTime = false;
         catchUpMultiplier = 1.0;
 
-        // Dynamic Rubber-Band Deadline Clock Setup (Starts at 02:00, finish target between 2s and 7s)
-        deadlineTimeSec = 120;
-        targetEndSec = Math.floor(Math.random() * 6) + 2; // 2 to 7 seconds
+        deadlineTimeSec = 150; 
+        targetEndSec = Math.floor(Math.random() * 6) + 2; 
         deadlineTickCounter = 0;
         updateClockDisplay();
 
@@ -1688,88 +2051,90 @@
         hideWindowsUpdate();
         hideTrackHoursBtn();
 
+        document.getElementById('slowmo-dim-overlay').style.display = 'none';
         document.getElementById('start-screen').style.display = 'none';
         document.getElementById('crt-modal-layer').style.display = 'none';
         document.getElementById('win-screen').style.display = 'none';
         document.getElementById('pause-overlay').style.display = 'none';
         document.getElementById('timesheet-modal').style.display = 'none';
+        document.getElementById('miranda-boss-overlay').style.display = 'none';
+        document.getElementById('miranda-victory-overlay').style.display = 'none';
+        document.getElementById('miranda-defeat-overlay').style.display = 'none';
+        document.getElementById('comments-minigame-viewport').style.display = 'none';
+
         document.getElementById('pause-btn').innerText = 'PAUSE';
         document.getElementById('pause-btn').style.background = '#0288d1';
 
         if (gameIntervalId) clearInterval(gameIntervalId);
-        gameIntervalId = setInterval(tick, 50); // 20 ticks per second
+        gameIntervalId = setInterval(tick, 50); 
 
         gameMusicStep = 0;
         if (musicIntervalId) clearInterval(musicIntervalId);
         musicIntervalId = setInterval(playMusicTick, 320);
     }
 
-    // Main Game Tick
+    // Main Game Loop
     function tick() {
         if (gameState !== 'PLAYING' || isPaused) return;
 
-        // Dynamic "Clutch Tension" Deadline Clock Tick (Every 20 ticks = 1 sec)
-        deadlineTickCounter++;
-        if (deadlineTickCounter >= 20) {
-            deadlineTickCounter = 0;
+        // Freeze render and clock if Timesheet minigame modal is actively open
+        const isTimesheetOpen = (document.getElementById('timesheet-modal') && document.getElementById('timesheet-modal').style.display === 'block');
+        if (isTimesheetOpen) {
+            updateHUD(0);
+            updateStatusIndicators();
+            return;
+        }
 
-            // Calculate Rubber-Band Target Clock Time based on Render Progress
-            let targetClock = 120;
-            if (renderProgress <= 90) {
-                // From 0% to 90%, target clock drops from 120s down to 18s
-                targetClock = 120 - (renderProgress / 90) * (120 - 18);
-            } else {
-                // From 90% to 100%, target clock drops from 18s down to targetEndSec (2-7s)
-                const last10Ratio = (renderProgress - 90) / 10;
-                targetClock = 18 - last10Ratio * (18 - targetEndSec);
-            }
+        // Dynamic Deadline Clock Tick (IMMUNE AFTER 90%)
+        if (renderProgress < 90) {
+            deadlineTickCounter++;
+            if (deadlineTickCounter >= 20) {
+                deadlineTickCounter = 0;
 
-            // Sync deadlineTimeSec smoothly towards targetClock
-            const expectedSec = Math.floor(targetClock);
-            if (deadlineTimeSec > expectedSec) {
-                deadlineTimeSec = Math.max(expectedSec, deadlineTimeSec - 1);
-            } else if (deadlineTimeSec < expectedSec && expectedSec < 118) {
-                // Clock holds briefly if render is slow so player stays in tension window
-                deadlineTimeSec = deadlineTimeSec; 
-            } else {
-                deadlineTimeSec--;
-            }
+                let targetClock = 150;
+                if (renderProgress <= 90) {
+                    targetClock = 150 - (renderProgress / 90) * (150 - 20);
+                }
 
-            updateClockDisplay();
+                const expectedSec = Math.floor(targetClock);
+                if (deadlineTimeSec > expectedSec) {
+                    deadlineTimeSec = Math.max(expectedSec, deadlineTimeSec - 1);
+                } else if (deadlineTimeSec < expectedSec && expectedSec < 148) {
+                    deadlineTimeSec = deadlineTimeSec; 
+                } else {
+                    deadlineTimeSec--;
+                }
 
-            if (deadlineTimeSec <= 0) {
-                deadlineTimeSec = 0;
-                gameOver('You missed the window. The client didn\'t just cancel the contract. They legally bought the rights to your name and rebranded you as "The Failure". Your desk was reduced to ashes.', 'failed_deadline');
-                return;
+                updateClockDisplay();
+
+                if (deadlineTimeSec <= 0) {
+                    deadlineTimeSec = 0;
+                    gameOver('You missed the window. The client didn\'t just cancel the contract. They legally bought the rights to your name and rebranded you as "The Failure". Your desk was reduced to ashes.', 'failed_deadline');
+                    return;
+                }
             }
         }
 
-        // Level Thresholds Update
-        if (hasTriggeredRevision) {
-            if (renderProgress < 70) {
-                currentLevel = 2; // Level 2 logic when < 70% after revision!
-            } else {
-                currentLevel = 3;
-                if (catchUpMultiplier > 1.0 && renderProgress >= 70) {
-                    catchUpMultiplier = 1.0; // Reset catch-up speed once back at Level 3
-                }
-            }
+        // LEVEL PROGRESSION LOGIC
+        if (renderProgress >= 90) {
+            currentLevel = 4; // LEVEL 4: COSMETIC MAXIMUM STRESS
+        } else if (hasTriggeredRevision) {
+            currentLevel = renderProgress < 70 ? 2 : 3;
         } else {
-            if (renderProgress < 10) {
-                currentLevel = 0;
-            } else if (renderProgress < 35) {
-                currentLevel = 1;
-            } else if (renderProgress < 70) {
-                currentLevel = 2;
-            } else {
-                currentLevel = 3;
-                if (catchUpMultiplier > 1.0 && renderProgress >= 70) {
-                    catchUpMultiplier = 1.0;
-                }
-            }
+            if (renderProgress < 10) currentLevel = 0;
+            else if (renderProgress < 35) currentLevel = 1;
+            else if (renderProgress < 70) currentLevel = 2;
+            else currentLevel = 3;
         }
 
-        // Timer Decrements
+        // LEVEL 3 TAVIA HARDCODE SPAWN AT LEVEL 3 START
+        if (currentLevel === 3 && !taviaSpawned) {
+            taviaSpawned = true;
+            createChatCard("Tavia Hunter", "UPDATE. TIMESHEETS. NOW.", "tavia_timesheets");
+            usedMessages.add("Tavia Hunter:UPDATE. TIMESHEETS. NOW.");
+        }
+
+        // CALCULATE SPEED MULTIPLIERS & DECREMENT BUFF TIMERS
         if (pauseTimer > 0) pauseTimer--;
         if (slow25Timer > 0) slow25Timer--;
         if (slow50Timer > 0) slow50Timer--;
@@ -1786,11 +2151,9 @@
         if (archiveBoostTimer > 0) archiveBoostTimer--;
         if (maciejBoostTimer > 0) maciejBoostTimer--;
 
-        // Calculate Multipliers
         const totalActiveChats = document.querySelectorAll('.chat-card').length;
-        const chatPenalty = totalActiveChats * 0.01; // -1% render speed per open chat!
-
-        const virusPenalty = activeViruses.length * 0.05; // 5% per active virus
+        const chatPenalty = totalActiveChats * 0.01;
+        const virusPenalty = activeViruses.length * 0.05;
         const slow25Val = slow25Timer > 0 ? 0.25 : 0;
         const slow50Val = slow50Timer > 0 ? 0.50 : 0;
         const ramScamVal = ramScamSpeedPenalty;
@@ -1799,156 +2162,150 @@
         const dismissBoostVal = dismissBoostTimer > 0 ? 0.10 : 0;
         const archiveBoostVal = archiveBoostTimer > 0 ? 0.25 : 0;
         const maciejBoostVal = maciejBoostTimer > 0 ? 0.05 : 0;
-        const permL3Val = permL3BoostActive ? 0.75 : 0; // +75% permanent boost for Level 3 catch-up!
+        const permL3Val = permL3BoostActive ? 0.75 : 0;
 
         let totalPenalty = virusPenalty + slow25Val + slow50Val + ramScamVal + chatPenalty;
         let bonusBoosts = nodeBoostVal + dismissBoostVal + archiveBoostVal + maciejBoostVal + permL3Val;
 
         let multiplier = (1.0 - totalPenalty + bonusBoosts) * catchUpMultiplier;
 
-        // Check if Timesheet Minigame modal is open -> 75% render speed reduction!
-        const isTimesheetOpen = (document.getElementById('timesheet-modal') && document.getElementById('timesheet-modal').style.display === 'block');
-        if (isTimesheetOpen) {
-            multiplier *= 0.25; // 75% reduction in render speed!
-        }
-
-        // 80% Reduction if ANY Action Chat Message is active on screen
         const activeActionCount = document.querySelectorAll('.chat-card[data-action="true"]').length;
-        if (activeActionCount > 0) {
-            multiplier *= 0.20; // 80% speed reduction!
-        }
+        if (activeActionCount > 0) multiplier *= 0.20;
 
-        if (pauseTimer > 0) multiplier = 0; // Paused by action message
+        if (pauseTimer > 0) multiplier = 0;
         multiplier = Math.max(0.0, multiplier);
 
-        // Progress Increment or Reverse Time Decrement (2x speed backwards)
-        if (isReverseTime) {
-            let revSpeed = baseSpeed * 2.0;
-            if (isTimesheetOpen) revSpeed *= 0.25;
-            renderProgress -= revSpeed;
-            if (renderProgress <= 0) {
-                renderProgress = 0;
-                gameOver("Because you failed to log your hours, the universe could not verify your physical existence. Accounting has confiscated your past, present and future.", "temporal_collapse");
-                return;
+        // LEVEL 4 MAXIMUM STRESS (90% to 98% over ~6 seconds)
+        if (currentLevel === 4 && renderProgress < 98) {
+            renderProgress += (8.0 / 120.0);
+
+            level4SpawnTimer++;
+            if (level4SpawnTimer % 5 === 0) { // ~30% faster chat spawns
+                spawnLevel4Chat();
             }
-        } else {
-            renderProgress += baseSpeed * multiplier;
+
+            if (level4SpawnTimer % 8 === 0) { // ~30% faster popup spawns
+                if (Math.random() < 0.5) spawnVirusPopup();
+                else spawnRamPopup();
+            }
+        } 
+        // 98% TO 99% SLOW-MO TRANSITION & BOSS LAUNCH AT 99%
+        else if (renderProgress >= 98 && !bossTriggered) {
+            isSlowMoTransition = true;
+            document.getElementById('slowmo-dim-overlay').style.display = 'block';
+
+            renderProgress += 0.02;
+
+            if (renderProgress >= 99) {
+                renderProgress = 99;
+                bossTriggered = true;
+                
+                // Show Miranda Boss Popup
+                isPaused = true;
+                document.getElementById('miranda-boss-overlay').style.display = 'flex';
+            }
+        } 
+        // STANDARD PROGRESSION (0%-90%, or 99%-100% Post-Boss)
+        else {
+            if (bossDefeated) {
+                renderProgress += 0.08;
+            } else if (isReverseTime) {
+                let revSpeed = baseSpeed * 2.0;
+                renderProgress -= revSpeed;
+                if (renderProgress <= 0) {
+                    renderProgress = 0;
+                    gameOver("Because you failed to log your hours, the universe could not verify your physical existence. Accounting has confiscated your past, present and future.", "temporal_collapse");
+                    return;
+                }
+            } else {
+                renderProgress += baseSpeed * multiplier;
+            }
+
+            // Cap fast catchup speed once back at 85%
+            if (catchUpMultiplier > 1.0 && renderProgress >= 85) {
+                catchUpMultiplier = 1.0;
+            }
         }
 
-        // GUARANTEED Tavia Hunter Timesheets Spawner at 45% render progress in Level 2
-        if (currentLevel === 2 && renderProgress >= 45 && !taviaSpawned) {
-            createChatCard("Tavia Hunter", "I need you to update your timesheets", "tavia_timesheets");
-            usedMessages.add("Tavia Hunter:I need you to update your timesheets");
-            taviaSpawned = true;
-        }
-
-        // --- 95%+ PANIC FEATURE: SUBTLE SHAKE & COLOR FLASHING ---
+        // 95%+ CRT Shake & Progress Flashing
         const crtScreen = document.getElementById('crt-screen');
         const progressFill = document.getElementById('render-progress-fill');
         
         if (renderProgress >= 95) {
-            if (!crtScreen.classList.contains('subtle-shake')) {
-                crtScreen.classList.add('subtle-shake');
-            }
-            if (!progressFill.classList.contains('panic-flash-fill')) {
-                progressFill.classList.add('panic-flash-fill');
-            }
+            if (!crtScreen.classList.contains('subtle-shake')) crtScreen.classList.add('subtle-shake');
+            if (!progressFill.classList.contains('panic-flash-fill')) progressFill.classList.add('panic-flash-fill');
         } else {
             crtScreen.classList.remove('subtle-shake');
             progressFill.classList.remove('panic-flash-fill');
         }
 
-        // CHECK CRASH CONDITIONS
-        if (totalActiveChats >= 10) {
-            gameOver("You ignored so many messages that they merged into a single, hyper-intelligent monster. It consumed your hard drive, gained control of your mouse, and submitted a letter of resignation on your behalf.", "notification_overflow");
-            return;
-        }
+        // STRICT IMMUNITY FOR LEVEL 4 (NO CRASHES AFTER 90%)
+        if (renderProgress < 90) {
+            if (totalActiveChats >= 10) {
+                gameOver("You ignored so many messages that they merged into a single, hyper-intelligent monster. It consumed your hard drive, gained control of your mouse, and submitted a letter of resignation on your behalf.", "notification_overflow");
+                return;
+            }
 
-        if (activeViruses.length > 5) {
-            gameOver("The 5th Virus was the final straw. Under digital corporate law, five malware programs now constitute a voting majority on your C: drive. They just held an emergency board meeting and voted to liquidate your operating system.", "virus_overload");
-            return;
+            if (activeViruses.length > 5) {
+                gameOver("The 5th Virus was the final straw. Under digital corporate law, five malware programs now constitute a voting majority on your C: drive. They just held an emergency board meeting and voted to liquidate your operating system.", "virus_overload");
+                return;
+            }
         }
 
         if (renderProgress >= 100) {
             renderProgress = 100;
             updateHUD(multiplier);
+            updateStatusIndicators();
             winGame();
             return;
         }
 
-        // Event Spawners
-        if (isTimesheetOpen || isReverseTime) {
-            chatTimer += 0.3; // Fewer messages/popups while timesheet or reverse time active!
-        } else {
+        // Event Spawners for Levels 0-3
+        if (currentLevel < 4) {
             chatTimer++;
-        }
+            virusTimer += virusSpawnMultiplier;
+            ramTimer++;
+            nodeTimer++;
+            antivirusTimer++;
+            updateSpawnTimer++;
 
-        virusTimer += virusSpawnMultiplier;
-        ramTimer++;
-        nodeTimer++;
-        antivirusTimer++;
-        updateSpawnTimer++;
-
-        // 1. Google Chats
-        if (currentLevel === 0) {
-            if (renderProgress >= 2.0 && renderProgress < 5.0 && !l0Msg1Spawned) {
-                spawnGoogleChat();
-                l0Msg1Spawned = true;
-            } else if (renderProgress >= 6.0 && renderProgress < 9.0 && !l0Msg2Spawned) {
-                spawnGoogleChat();
-                l0Msg2Spawned = true;
+            if (currentLevel === 0) {
+                // Spawn 2-3 pure welcome joke messages in level 0
+                if (chatTimer >= 60 && level0SpawnedCount < level0TargetCount) {
+                    spawnGoogleChat();
+                    level0SpawnedCount++;
+                    chatTimer = 0;
+                }
+            } else {
+                // Spawning frequencies per level requirements:
+                // Level 1: Every 5s (100 ticks)
+                // Level 2: Every 4s (80 ticks)
+                // Level 3: Every 2s (40 ticks)
+                let chatThreshold = currentLevel === 1 ? 100 : (currentLevel === 2 ? 80 : 40);
+                if (chatTimer >= chatThreshold) {
+                    spawnGoogleChat();
+                    chatTimer = 0;
+                }
             }
-        } else {
-            let chatThreshold = 120;
-            if (currentLevel === 1) chatThreshold = 120; // ~6s
-            else if (currentLevel === 2) chatThreshold = 80;  // ~4s
-            else if (currentLevel === 3) chatThreshold = 40;  // ~2s (DOUBLE RATE!)
 
-            if (chatTimer > chatThreshold) {
-                spawnGoogleChat();
-                chatTimer = 0;
-            }
-        }
+            // Elevated Spawns between 60% and 70%
+            let virusThreshold = (renderProgress >= 60 && renderProgress < 70) ? 120 : 320;
+            let ramThreshold = (renderProgress >= 60 && renderProgress < 70) ? 220 : 500;
 
-        // 2. Viruses (~15-18s base interval)
-        if (virusTimer > 320) {
-            spawnVirusPopup();
-            virusTimer = 0;
-        }
-
-        // 3. AntiVirus Bonus
-        if (activeViruses.length >= 2 && antivirusTimer > 350) {
-            spawnAntiVirusPopup();
-            antivirusTimer = 0;
-        }
-
-        // 4. RAM Scams (Max 2 per level threshold)
-        if (ramTimer > 500 && ramUpgradesSpawned < currentLevel * 2) {
-            spawnRamPopup();
-            ramUpgradesSpawned++;
-            ramTimer = 0;
-        }
-
-        // 5. Render Nodes (Super Rare 5s popup)
-        if (nodeTimer > 800) {
-            spawnRenderNodePopup();
-            nodeTimer = 0;
-        }
-
-        // 6. Windows Update Notification (~25s interval)
-        if (updateSpawnTimer > 500 && !isUpdateActive) {
-            triggerWindowsUpdate();
-            updateSpawnTimer = 0;
+            if (virusTimer > virusThreshold) { spawnVirusPopup(); virusTimer = 0; }
+            if (activeViruses.length >= 2 && antivirusTimer > 350) { spawnAntiVirusPopup(); antivirusTimer = 0; }
+            if (ramTimer > ramThreshold && ramUpgradesSpawned < 10) { spawnRamPopup(); ramUpgradesSpawned++; ramTimer = 0; }
+            if (nodeTimer > 800) { spawnRenderNodePopup(); nodeTimer = 0; }
+            if (updateSpawnTimer > 500 && !isUpdateActive && renderProgress < 90) { triggerWindowsUpdate(); updateSpawnTimer = 0; }
         }
 
         updateHUD(multiplier);
+        updateStatusIndicators();
     }
 
-    // Update HUD
     function updateHUD(multiplier) {
         document.getElementById('progress-val').innerText = `${Math.floor(renderProgress)}%`;
         document.getElementById('render-progress-fill').style.width = `${renderProgress}%`;
-
         document.getElementById('lvl-badge').innerText = `LEVEL ${currentLevel}`;
 
         const badge = document.getElementById('speed-badge');
@@ -1968,13 +2325,59 @@
         document.getElementById('node-count').innerText = Math.round(renderNodeBoost / 0.10);
     }
 
-    // Generic Chat Card Builder
+    function updateStatusIndicators() {
+        const container = document.getElementById('status-indicators');
+        if (!container) return;
+        container.innerHTML = '';
+
+        const activeIndicators = [];
+
+        if (archiveBoostTimer > 0) {
+            activeIndicators.push({ text: '+25%', type: 'buff', remaining: archiveBoostTimer, total: 200 });
+        }
+        if (dismissBoostTimer > 0) {
+            activeIndicators.push({ text: '+10%', type: 'buff', remaining: dismissBoostTimer, total: 60 });
+        }
+        if (pauseTimer > 0) {
+            activeIndicators.push({ text: 'PAUSED', type: 'debuff', remaining: pauseTimer, total: 200 });
+        }
+        if (slow50Timer > 0) {
+            activeIndicators.push({ text: '-50%', type: 'debuff', remaining: slow50Timer, total: 200 });
+        }
+        if (slow25Timer > 0) {
+            activeIndicators.push({ text: '-25%', type: 'debuff', remaining: slow25Timer, total: 200 });
+        }
+        if (ramScamSpeedTimer > 0) {
+            activeIndicators.push({ text: '-50%', type: 'debuff', remaining: ramScamSpeedTimer, total: 200 });
+        }
+
+        activeIndicators.forEach(ind => {
+            const pct = Math.max(0, Math.min(1, ind.remaining / ind.total));
+            const circumference = 37.7; 
+            const offset = circumference * (1 - pct);
+
+            const div = document.createElement('div');
+            div.className = `status-badge ${ind.type}`;
+            div.innerHTML = `
+                <span>${ind.text}</span>
+                <svg class="status-circle" viewBox="0 0 16 16">
+                    <circle class="bg" cx="8" cy="8" r="6"/>
+                    <circle class="fg" cx="8" cy="8" r="6" style="stroke-dashoffset: ${offset.toFixed(1)}px;"/>
+                </svg>
+            `;
+            container.appendChild(div);
+        });
+    }
+
     function createChatCard(senderName, msgText, actionType = null) {
         const leftCol = document.getElementById('chat-stack-left');
+        const midCol = document.getElementById('chat-stack-mid');
         const rightCol = document.getElementById('chat-stack-right');
         
         let targetCol = leftCol;
-        if (leftCol.children.length >= 5) {
+        if (leftCol.children.length >= 4 && midCol.children.length < 4) {
+            targetCol = midCol;
+        } else if (leftCol.children.length >= 4 && midCol.children.length >= 4) {
             targetCol = rightCol;
         }
 
@@ -1986,17 +2389,9 @@
         card.id = id;
 
         playSound('chat');
-
         const initial = senderName[0];
 
         if (actionType) {
-            let acceptText = "Accept";
-            let acceptBgStyle = "";
-            if (actionType === 'maciej') {
-                acceptText = "Thank you";
-                acceptBgStyle = "background: #2e7d32;";
-            }
-
             card.innerHTML = `
                 <div class="chat-header">
                     <span>Google Chat</span>
@@ -2008,7 +2403,7 @@
                         <div class="chat-sender">${senderName}</div>
                         <div class="chat-msg">${msgText}</div>
                         <div class="chat-actions">
-                            <button class="chat-btn-accept" style="${acceptBgStyle}" onclick="handleActionAccept('${id}', '${actionType}', '${senderName}')">${acceptText}</button>
+                            <button class="chat-btn-accept" onclick="handleActionAccept('${id}', '${actionType}', '${senderName}')">Accept</button>
                             <button class="chat-btn-decline" onclick="handleActionDecline('${id}', '${actionType}')">Decline</button>
                         </div>
                     </div>
@@ -2033,80 +2428,106 @@
         targetCol.appendChild(card);
     }
 
-    // Google Chat Spawner with Level Pools & L3 Revision Exclusivity Limit
     function spawnGoogleChat() {
-        let pool = [];
-        let actionPool = [];
-
         if (currentLevel === 0) {
-            pool = level0Jokes;
-        } else if (currentLevel === 1) {
-            pool = level1Jokes;
-            actionPool = level1Actions;
-        } else if (currentLevel === 2) {
-            pool = level2Jokes;
-            actionPool = level2Actions;
-        } else {
-            pool = level3Jokes;
-            if (!l3RevisionTriggered && !level3ActionSpawned && currentRoundL3Action) {
-                actionPool = [currentRoundL3Action]; // Single random Level 3 action for this round!
-            } else {
-                actionPool = [];
+            const availableJokes = LEVEL_0_MESSAGES.filter(m => !usedMessages.has(m.name + ':' + m.msg));
+            if (availableJokes.length === 0) return;
+            const item = availableJokes[Math.floor(Math.random() * availableJokes.length)];
+            usedMessages.add(item.name + ':' + item.msg);
+            createChatCard(item.name, item.msg, null);
+            return;
+        }
+
+        if (currentLevel === 1) {
+            const availableJokes = LEVEL_1_JOKES.filter(m => !usedMessages.has(m.name + ':' + m.msg));
+            const availableActions = LEVEL_1_ACTIONS.filter(m => !usedMessages.has(m.name + ':' + m.msg));
+
+            let shouldSpawnAction = (level1ActionsSpawned < 2) && (availableActions.length > 0) && (Math.random() < 0.4 || availableJokes.length === 0);
+
+            if (shouldSpawnAction) {
+                const item = availableActions[Math.floor(Math.random() * availableActions.length)];
+                usedMessages.add(item.name + ':' + item.msg);
+                level1ActionsSpawned++;
+                createChatCard(item.name, item.msg, item.action);
+            } else if (availableJokes.length > 0) {
+                const item = availableJokes[Math.floor(Math.random() * availableJokes.length)];
+                usedMessages.add(item.name + ':' + item.msg);
+                createChatCard(item.name, item.msg, null);
+            }
+            return;
+        }
+
+        if (currentLevel === 2) {
+            const availableJokes = LEVEL_2_JOKES.filter(m => !usedMessages.has(m.name + ':' + m.msg));
+            const availableActions = level2ActionsSelected.filter(m => !usedMessages.has(m.name + ':' + m.msg));
+
+            let shouldSpawnAction = (level2ActionsSpawned < 2) && (availableActions.length > 0) && (Math.random() < 0.35 || availableJokes.length === 0);
+
+            if (shouldSpawnAction) {
+                const item = availableActions[Math.floor(Math.random() * availableActions.length)];
+                usedMessages.add(item.name + ':' + item.msg);
+                level2ActionsSpawned++;
+                createChatCard(item.name, item.msg, item.action);
+            } else if (availableJokes.length > 0) {
+                const item = availableJokes[Math.floor(Math.random() * availableJokes.length)];
+                usedMessages.add(item.name + ':' + item.msg);
+                createChatCard(item.name, item.msg, null);
+            }
+            return;
+        }
+
+        if (currentLevel === 3) {
+            const availableJokes = LEVEL_3_JOKES.filter(m => !usedMessages.has(m.name + ':' + m.msg));
+            const availableActions = LEVEL_3_ACTIONS.filter(m => !usedMessages.has(m.name + ':' + m.msg));
+
+            let shouldSpawnAction = !l3RevisionTriggered && !level3ActionSpawned && (availableActions.length > 0) && (Math.random() < 0.35 || availableJokes.length === 0);
+
+            if (shouldSpawnAction) {
+                const item = availableActions[Math.floor(Math.random() * availableActions.length)];
+                usedMessages.add(item.name + ':' + item.msg);
+                level3ActionSpawned = true;
+                createChatCard(item.name, item.msg, item.action);
+            } else if (availableJokes.length > 0) {
+                const item = availableJokes[Math.floor(Math.random() * availableJokes.length)];
+                usedMessages.add(item.name + ':' + item.msg);
+                createChatCard(item.name, item.msg, null);
             }
         }
-
-        // Filter out used messages
-        const availableJokes = pool.filter(m => !usedMessages.has(m.name + ':' + m.msg));
-        const availableActions = actionPool.filter(m => !usedMessages.has(m.name + ':' + m.msg));
-
-        if (availableJokes.length === 0 && availableActions.length === 0) return;
-
-        const isAction = availableActions.length > 0 && (Math.random() < 0.35 || availableJokes.length === 0);
-        const selectedData = isAction
-            ? availableActions[Math.floor(Math.random() * availableActions.length)]
-            : availableJokes[Math.floor(Math.random() * availableJokes.length)];
-
-        usedMessages.add(selectedData.name + ':' + selectedData.msg);
-
-        if (isAction && currentLevel === 3) {
-            level3ActionSpawned = true; // Lock so no other Level 3 action message can spawn this game
-        }
-
-        createChatCard(selectedData.name, selectedData.msg, isAction ? selectedData.action : null);
     }
 
-    // Dismiss Joke Chat with Speed Boost
+    function spawnLevel4Chat() {
+        const item = allChatPool[Math.floor(Math.random() * allChatPool.length)];
+        createChatCard(item.name, item.msg);
+    }
+
     function dismissJokeChat(id) {
         if (isPaused) return;
         closePopup(id);
-        dismissBoostTimer = 60; // 3 seconds @ 20 ticks/sec (+10% speed boost)
+        dismissBoostTimer = 60; // +10% boost for 3s
     }
 
-    // Handle Action Chat Accept/Decline
     function handleActionAccept(id, action, senderName) {
         if (isPaused) return;
         closePopup(id);
 
-        if (action === 'eli_skate') {
-            createConsequencePopup("Eli is now your best friend", "");
-        } else if (action === 'nadia_desk') {
-            pauseRenderWithLoading("Cleaning up desk…", 5, false);
+        if (action === 'nadia_desk') {
+            pauseRenderWithLoading("Nadia was impressed and disgusted by the amount of trash on your desk", 3, false);
         } else if (action === 'maciej') {
-            maciejBoostTimer = 100; // 5s @ 20 ticks/sec (+5% speed boost)
-            createConsequencePopup("Maciej and you are now best friends", "");
-        } else if (action === 'giada' || action === 'nadia_archive') {
-            pauseRenderWithLoading("Archiving scene…", 4, true);
+            pauseRenderWithLoading("Maciej is now your best friend, good job", 3, false);
+        } else if (action === 'giada') {
+            pauseRenderWithLoading("Archiving Scene...", 3, true);
         } else if (action === 'felipe') {
-            pauseRenderWithLoading("Uploading…", 4, false);
+            pauseRenderWithLoading("Uploading...", 3, true);
         } else if (action === 'arnon') {
-            pauseRenderWithLoading("Saving selected…", 4, true);
+            pauseRenderWithLoading("Saving Material...", 3, true);
         } else if (action === 'tavia_timesheets') {
-            isReverseTime = true;
-            playSound('reverse');
             openTimesheetMinigame();
-        } else if (action === 'miranda' || action === 'bec_comments' || action === 'bartosz') {
+        } else if (action === 'bec_comments') {
             l3RevisionTriggered = true;
-            triggerProgressResetAndCatchup(senderName, action);
+            triggerProgressResetAndCatchup(senderName, 'bec_comments');
+        } else if (action === 'bartosz') {
+            l3RevisionTriggered = true;
+            triggerProgressResetAndCatchup(senderName, 'bartosz');
         }
     }
 
@@ -2114,44 +2535,35 @@
         if (isPaused) return;
         closePopup(id);
 
-        if (action === 'eli_skate') {
-            createConsequencePopup("Eli no longer thinks you are cool", "");
-        } else if (action === 'nadia_desk') {
-            createConsequencePopup("Nadia Monte doesn’t like you anymore", "");
+        if (action === 'nadia_desk') {
+            createConsequencePopup("Nadia doesn't like you anymore", "");
         } else if (action === 'maciej') {
-            createConsequencePopup("Maciej's heart was broken", "");
+            createConsequencePopup("Maciej's heart was just broken, poor Maciej :(", "");
         } else if (action === 'giada') {
-            createConsequencePopup("You said NO to Giada, HOW DARE YOU?", "render paused for 10 seconds.");
-            pauseTimer = 200; // 10s
-        } else if (action === 'nadia_archive') {
-            createConsequencePopup("Nadia Monte is now sad, and it’s all your fault", "render speed slowed by 25% for 10 seconds.");
-            slow25Timer = 200; // 10s
+            createConsequencePopup("You said NO to Giada, HOW DARE YOU?", "Render paused for 10 seconds.");
+            pauseTimer = 200;
         } else if (action === 'felipe') {
-            createConsequencePopup("Felipe is not angry, he’s just disappointed", "");
+            createConsequencePopup("Felipe is not angy, he's just disappointed", "Render paused for 10 seconds.");
+            pauseTimer = 200;
         } else if (action === 'arnon') {
-            createConsequencePopup("You left Arnon waiting all day, shame on you", "render paused for 10 seconds.");
-            pauseTimer = 200; // 10s
+            createConsequencePopup("You left Arnon waiting all day, you are a bad person", "Render paused for 10 seconds.");
+            pauseTimer = 200;
         } else if (action === 'tavia_timesheets') {
             handleTimesheetDecline();
-        } else if (action === 'miranda') {
-            l3RevisionTriggered = true;
-            createConsequencePopup("You just ghosted Miranda, you can run but you can’t hide", "render speed decreased by 50% for 15 seconds.");
-            slow50Timer = 300; // 15 seconds penalty
         } else if (action === 'bec_comments') {
             l3RevisionTriggered = true;
-            createConsequencePopup("Bec is furious, look behind you", "render speed decreased by 50% for 15 seconds.");
-            slow50Timer = 300; // 15 seconds penalty
+            createConsequencePopup("The client is not gonna love this...", "Render speed decreased by 50% for 10 seconds.");
+            slow50Timer = 200;
         } else if (action === 'bartosz') {
             l3RevisionTriggered = true;
-            createConsequencePopup("I KNOW WHAT YOU DID", "render speed decreased by 50% for 15 seconds.");
-            slow50Timer = 300; // 15 seconds penalty
+            createConsequencePopup("I KNOW WHAT YOU DID!", "Render speed decreased by 50% for 10 seconds.");
+            slow50Timer = 200;
         }
     }
 
-    // Timesheet Minigame Functions
+    // Timesheet Minigame
     function openTimesheetMinigame() {
         if (isPaused) return;
-        
         const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
         const prefilled = [Math.floor(Math.random() * 2), Math.floor(Math.random() * 2) + 3];
         
@@ -2164,7 +2576,6 @@
                 timesheetDaysData.push({ day: days[i], val: '', readonly: false });
             }
         }
-        
         renderTimesheetMinigame();
         document.getElementById('timesheet-modal').style.display = 'block';
     }
@@ -2172,7 +2583,6 @@
     function renderTimesheetMinigame() {
         const tbody = document.getElementById('timesheet-table-body');
         tbody.innerHTML = '';
-        
         let optionsHtml = '<option value="">-- Select --</option>';
         for (let step = 6.0; step <= 9.0; step += 0.25) {
             optionsHtml += `<option value="${step.toFixed(2)}">${step.toFixed(2)} hrs</option>`;
@@ -2181,119 +2591,77 @@
         timesheetDaysData.forEach((d, idx) => {
             const tr = document.createElement('tr');
             tr.style.borderBottom = '1px solid #374151';
-            
             if (d.readonly) {
-                tr.innerHTML = `
-                    <td style="padding: 4px; font-weight: bold; color: #d1d5db;">${d.day}</td>
-                    <td style="padding: 4px; text-align: right; color: #10b981; font-weight: bold;">${d.val} hrs <span style="font-size:8px; color:#6b7280;">(Logged)</span></td>
-                `;
+                tr.innerHTML = `<td style="padding: 4px; font-weight: bold; color: #d1d5db;">${d.day}</td><td style="padding: 4px; text-align: right; color: #10b981; font-weight: bold;">${d.val} hrs</td>`;
             } else {
-                tr.innerHTML = `
-                    <td style="padding: 4px; font-weight: bold; color: #e5e7eb;">${d.day}</td>
-                    <td style="padding: 4px; text-align: right;">
-                        <select onchange="calcTimesheetTotal()" id="ts_input_${idx}" style="background: #1f2937; color: #ffffff; border: 1px solid #4b5563; border-radius: 3px; padding: 2px 4px; font-size: 10px;">
-                            ${optionsHtml}
-                        </select>
-                    </td>
-                `;
+                tr.innerHTML = `<td style="padding: 4px; font-weight: bold; color: #e5e7eb;">${d.day}</td><td style="padding: 4px; text-align: right;"><select onchange="calcTimesheetTotal()" id="ts_input_${idx}" style="background: #1f2937; color: #ffffff; border: 1px solid #4b5563; border-radius: 3px; padding: 2px 4px; font-size: 10px;">${optionsHtml}</select></td>`;
             }
             tbody.appendChild(tr);
         });
-        
         calcTimesheetTotal();
     }
 
     function calcTimesheetTotal() {
         let total = 0;
         let allFilled = true;
-
         timesheetDaysData.forEach((d, idx) => {
-            if (d.readonly) {
-                total += parseFloat(d.val);
-            } else {
+            if (d.readonly) total += parseFloat(d.val);
+            else {
                 const sel = document.getElementById(`ts_input_${idx}`);
-                if (sel && sel.value !== '') {
-                    total += parseFloat(sel.value);
-                } else {
-                    allFilled = false;
-                }
+                if (sel && sel.value !== '') total += parseFloat(sel.value);
+                else allFilled = false;
             }
         });
-
         const totalEl = document.getElementById('timesheet-live-total');
         if (totalEl) {
             totalEl.innerText = `${total.toFixed(2)} / 37.50 hrs`;
-            if (Math.abs(total - 37.50) < 0.01 && allFilled) {
-                totalEl.style.color = '#00e676';
-            } else {
-                totalEl.style.color = '#ff9800';
-            }
+            totalEl.style.color = Math.abs(total - 37.50) < 0.01 && allFilled ? '#00e676' : '#ff9800';
         }
     }
 
     function submitTimesheet() {
         if (isPaused) return;
-
         let total = 0;
         let allFilled = true;
-
         timesheetDaysData.forEach((d, idx) => {
-            if (d.readonly) {
-                total += parseFloat(d.val);
-            } else {
+            if (d.readonly) total += parseFloat(d.val);
+            else {
                 const sel = document.getElementById(`ts_input_${idx}`);
-                if (sel && sel.value !== '') {
-                    const val = parseFloat(sel.value);
-                    if (val < 6.0 || val > 9.0) allFilled = false;
-                    total += val;
-                } else {
-                    allFilled = false;
-                }
+                if (sel && sel.value !== '') total += parseFloat(sel.value);
+                else allFilled = false;
             }
         });
 
         const errEl = document.getElementById('timesheet-error-msg');
-
-        if (!allFilled) {
-            errEl.innerText = "Error: All days must be filled with 6.0 to 9.0 hrs!";
-            errEl.style.display = 'block';
-            return;
-        }
-
-        if (Math.abs(total - 37.50) > 0.01) {
-            errEl.innerText = `Error: Total is ${total.toFixed(2)} hrs. Must equal 37.50 hrs exactly!`;
+        if (!allFilled || Math.abs(total - 37.50) > 0.01) {
+            errEl.innerText = !allFilled ? "Error: Fill all days!" : `Error: Total is ${total.toFixed(2)} hrs. Must equal 37.50!`;
             errEl.style.display = 'block';
             return;
         }
 
         errEl.style.display = 'none';
         document.getElementById('timesheet-modal').style.display = 'none';
-        
         isReverseTime = false;
         hideTrackHoursBtn();
         playSound('boost');
-        archiveBoostTimer = 200; // 25% boost for 10s
-        createConsequencePopup("TIMESHEET APPROVED!", "Tavia is satisfied. Speed boosted by +25% for 10 seconds!");
+        archiveBoostTimer = 200;
+        createConsequencePopup("TIMESHEET APPROVED!", "Speed boosted by +25% for 10 seconds!");
     }
 
     function handleTimesheetDecline() {
         if (isPaused) return;
         document.getElementById('timesheet-modal').style.display = 'none';
-        
         isReverseTime = true;
         playSound('reverse');
         spawnTrackHoursBtn();
-        createConsequencePopup("YOU CAN’T ESCAPE FROM TIME", "Time is going backwards! Click 'TRACK MY HOURS' to log your timesheets!");
+        createConsequencePopup("YOU CAN’T ESCAPE FROM TIME", "Click 'TRACK MY HOURS' to log your timesheets!");
     }
 
     function spawnTrackHoursBtn() {
         const btn = document.getElementById('track-hours-btn');
         if (!btn) return;
-        
-        const posX = Math.floor(Math.random() * 180) + 20;
-        const posY = Math.floor(Math.random() * 120) + 30;
-        btn.style.left = `${posX}px`;
-        btn.style.top = `${posY}px`;
+        btn.style.left = `${Math.floor(Math.random() * 180) + 20}px`;
+        btn.style.top = `${Math.floor(Math.random() * 120) + 30}px`;
         btn.style.display = 'block';
     }
 
@@ -2332,17 +2700,15 @@
             clearInterval(interval);
             const el = document.getElementById(id);
             if (el) el.remove();
-
             if (giveArchiveBoost) {
-                archiveBoostTimer = 200; // 10s @ 25% speed boost!
-                createConsequencePopup("SCENE SAVED!", "Speed boosted by +25% for 10 seconds!");
+                archiveBoostTimer = 200; // +25% boost for 10 seconds
+                createConsequencePopup("PROCESS COMPLETE!", "Render speed increased 25% for 10 seconds!");
             }
         }, seconds * 1000);
     }
 
-    // Trigger L3 Revision Progress Drain + Instant Speed Buff Start
     function triggerProgressResetAndCatchup(senderName, action = '') {
-        hasTriggeredRevision = true; // Stay in Level 2-3 logic!
+        hasTriggeredRevision = true;
         playSound('reset');
         const layer = document.getElementById('popup-layer');
         const popup = document.createElement('div');
@@ -2350,35 +2716,30 @@
         const id = 'reset_pop_' + Date.now();
         popup.id = id;
 
+        const popupText = action === 'bec_comments' ? "Applying comments, starting again." : "Updating model... starting again.";
+
         popup.innerHTML = `
             <div class="popup-header"><span>Client Revision</span></div>
             <div class="popup-body">
-                <div style="font-weight:bold; color:#ff5252;" id="reset_msg_${id}">Applying comments…</div>
+                <div style="font-weight:bold; color:#ff5252;" id="reset_msg_${id}">${popupText}</div>
             </div>
         `;
         layer.appendChild(popup);
 
-        // Rapidly drain progress to 0
         const drainInterval = setInterval(() => {
-            renderProgress -= 5.0; // Fast drain
+            renderProgress -= 5.0;
             if (renderProgress <= 0) {
                 renderProgress = 0;
                 clearInterval(drainInterval);
-
-                // Speed buff starts IMMEDIATELY as soon as progress hits 0
-                catchUpMultiplier = 12.0;  // 12x catch-up speed back up to Level 3 (70%)
-                permL3BoostActive = true;  // Permanent +75% boost once back at 70%+
+                catchUpMultiplier = 12.0;  // Fast forwards quickly to 85%
+                permL3BoostActive = true;  
 
                 const popEl = document.getElementById(id);
                 if (popEl) {
-                    let successMsg = `${senderName} is happy with the comments, your pc is now faster.`;
-                    if (action === 'bartosz') {
-                        successMsg = "Ouch!";
-                    }
                     popEl.innerHTML = `
                         <div class="popup-header"><span>Client Revision Approved</span></div>
                         <div class="popup-body">
-                            <div style="font-weight:bold; color:#00e676; margin-bottom: 8px;">${successMsg}</div>
+                            <div style="font-weight:bold; color:#00e676; margin-bottom: 8px;">Revising scene... Catching up quickly!</div>
                             <button class="popup-btn" onclick="dismissRevisionPopup('${id}')">OK</button>
                         </div>
                     `;
@@ -2414,7 +2775,6 @@
         layer.appendChild(popup);
     }
 
-    // Virus, RAM Scams, Render Node & AntiVirus Popups
     function spawnVirusPopup() {
         const titles = ["SYSTEM WARNING", "<b>VIRUS</b> DETECTED", "CRITICAL <b>VIRUS</b> ALERT"];
         const msgs = ["Trojan32.EXE consuming CPU!", "Unsolicited adware running in background.", "Memory Leak Error: Render thread stalled!"];
@@ -2424,16 +2784,8 @@
     }
 
     function spawnRamPopup() {
-        const titles = [
-            "DOWNLOAD 64GB RAM FOR FREE",
-            "★ FREE RAM UPGRADE ★",
-            "BE THE GOD OF RAM"
-        ];
-        const msgs = [
-            "This will super mega speed up your renders!",
-            "Everybody is gonna love you!",
-            "Double your render speed in 1-Click!"
-        ];
+        const titles = ["DOWNLOAD 64GB RAM FOR FREE", "★ FREE RAM UPGRADE ★", "BE THE GOD OF RAM"];
+        const msgs = ["This will super mega speed up your renders!", "Everybody is gonna love you!", "Double your render speed in 1-Click!"];
         const idx = Math.floor(Math.random() * titles.length);
         createGenericPopup(titles[idx], msgs[idx], 'ram_scam', "This is a complete lie.");
     }
@@ -2458,17 +2810,8 @@
 
         popup.className = themeClass;
 
-        // Spread popups across middle and right area of CRT screen
-        const baseGridX = [40, 140, 230, 80, 180, 250];
-        const baseGridY = [15, 60, 110, 135, 30, 85];
-        const gridIdx = popupOffsetIndex % baseGridX.length;
-        popupOffsetIndex++;
-
-        const jitterX = Math.floor(Math.random() * 30) - 15;
-        const jitterY = Math.floor(Math.random() * 20) - 10;
-
-        const posX = Math.max(10, Math.min(250, baseGridX[gridIdx] + jitterX));
-        const posY = Math.max(10, Math.min(150, baseGridY[gridIdx] + jitterY));
+        const posX = Math.floor(Math.random() * 200) + 10;
+        const posY = Math.floor(Math.random() * 140) + 10;
 
         popup.style.left = `${posX}px`;
         popup.style.top = `${posY}px`;
@@ -2479,9 +2822,9 @@
         let btnHtml = '';
         if (type === 'virus') {
             btnHtml = `
-                <div style="color: #ff5252; font-weight: bold; margin-top: 4px; font-size: 10px;">⚠️ INFECTING IN: <span id="vtimer_${id}">5</span>s</div>
-                <button class="popup-btn" id="vclean_btn_${id}" style="margin-top:6px;" onclick="handleCleanVirus('${id}', this)">CLEAN VIRUS</button>
-                <button class="popup-btn popup-btn-danger" style="margin-top:4px;" onclick="handleIgnoreVirus('${id}')">IGNORE</button>
+                <div style="color: #ff5252; font-weight: bold; margin-top: 4px; font-size: 9px;">⚠️ INFECTING IN: <span id="vtimer_${id}">5</span>s</div>
+                <button class="popup-btn" id="vclean_btn_${id}" style="margin-top:4px;" onclick="handleCleanVirus('${id}', this)">CLEAN VIRUS</button>
+                <button class="popup-btn popup-btn-danger" style="margin-top:3px;" onclick="handleIgnoreVirus('${id}')">IGNORE</button>
             `;
         } else if (type === 'ram_scam') {
             btnHtml = `<button class="popup-btn" onclick="handleRamScamClick('${id}')">DOWNLOAD RAM</button>`;
@@ -2555,18 +2898,13 @@
     }
 
     function markActiveVirus(id) {
-        if (!activeViruses.includes(id)) {
-            activeViruses.push(id);
-        }
+        if (!activeViruses.includes(id)) activeViruses.push(id);
     }
 
-    // Cleaning a virus takes 2 seconds with countdown
     function handleCleanVirus(id, btnEl) {
-        if (isPaused) return;
-        if (btnEl.disabled) return;
+        if (isPaused || btnEl.disabled) return;
         btnEl.disabled = true;
 
-        // Stop the 5s infection timer immediately
         if (pendingVirusTimers[id]) {
             clearInterval(pendingVirusTimers[id]);
             delete pendingVirusTimers[id];
@@ -2595,7 +2933,6 @@
             delete pendingVirusTimers[id];
         }
         markActiveVirus(id);
-
         const el = document.getElementById(id);
         if (el) el.remove();
     }
@@ -2605,19 +2942,11 @@
         closePopup(id);
         playSound('boost');
 
-        // Clear all pending virus timers
-        for (let tid in pendingVirusTimers) {
-            clearInterval(pendingVirusTimers[tid]);
-        }
+        for (let tid in pendingVirusTimers) clearInterval(pendingVirusTimers[tid]);
         pendingVirusTimers = {};
 
-        // Remove all virus popups from screen
-        const virusPopups = document.querySelectorAll('.popup-virus');
-        virusPopups.forEach(el => el.remove());
-
-        // Clear activeViruses array
+        document.querySelectorAll('.popup-virus').forEach(el => el.remove());
         activeViruses = [];
-
         createConsequencePopup("ANTIVIRUS EXECUTED!", "All active viruses cleared from system memory!");
     }
 
@@ -2625,15 +2954,14 @@
         if (isPaused) return;
         closePopup(id);
         playSound('virus');
-
         markActiveVirus('ram_virus_' + Date.now() + Math.random());
 
         if (Math.random() < 0.5) {
             ramScamSpeedPenalty = 0.50;
-            ramScamSpeedTimer = 200; // 10s
+            ramScamSpeedTimer = 200;
         } else {
             virusSpawnMultiplier = 3;
-            virus3xTimer = 400; // 20s
+            virus3xTimer = 400;
         }
     }
 
@@ -2641,19 +2969,18 @@
         if (isPaused) return;
         closePopup(id);
         playSound('boost');
-        renderNodeBoost += 0.10; // Permanent +10%
+        renderNodeBoost += 0.10;
     }
 
     function triggerWindowsUpdate() {
         isUpdateActive = true;
-        updateCountdown = 10; // 10 seconds timer
+        updateCountdown = 10;
         document.getElementById('update-toast').style.display = 'block';
         document.getElementById('update-timer').innerText = `${updateCountdown}s`;
         document.getElementById('update-timer-text').innerText = updateCountdown;
 
         updateIntervalId = setInterval(() => {
             if (isPaused) return;
-
             updateCountdown--;
             document.getElementById('update-timer').innerText = `${updateCountdown}s`;
             document.getElementById('update-timer-text').innerText = updateCountdown;
@@ -2666,8 +2993,7 @@
     }
 
     function snoozeUpdate() {
-        if (isPaused) return;
-        if (!isUpdateActive) return;
+        if (isPaused || !isUpdateActive) return;
         clearInterval(updateIntervalId);
         hideWindowsUpdate();
         updateSpawnTimer = -300;
@@ -2689,28 +3015,23 @@
             clearInterval(pendingVirusTimers[id]);
             delete pendingVirusTimers[id];
         }
-
         const el = document.getElementById(id);
         if (el) el.remove();
 
         const index = activeViruses.indexOf(id);
-        if (index > -1) {
-            activeViruses.splice(index, 1);
-        }
+        if (index > -1) activeViruses.splice(index, 1);
     }
 
     function clearPopups() {
         document.getElementById('popup-layer').innerHTML = '';
         document.getElementById('chat-stack-left').innerHTML = '';
+        document.getElementById('chat-stack-mid').innerHTML = '';
         document.getElementById('chat-stack-right').innerHTML = '';
         activeViruses = [];
-        for (let tid in pendingVirusTimers) {
-            clearInterval(pendingVirusTimers[tid]);
-        }
+        for (let tid in pendingVirusTimers) clearInterval(pendingVirusTimers[tid]);
         pendingVirusTimers = {};
     }
 
-    // Clean Shake/Flash Effects on Stop/Reset
     function resetPanicEffects() {
         const crtScreen = document.getElementById('crt-screen');
         const progressFill = document.getElementById('render-progress-fill');
@@ -2718,7 +3039,6 @@
         if (progressFill) progressFill.classList.remove('panic-flash-fill');
     }
 
-    // Custom Game Over Handler with specific texts
     function gameOver(reason, type = 'max_crash') {
         clearInterval(gameIntervalId);
         clearInterval(musicIntervalId);
@@ -2735,38 +3055,19 @@
         crtModalLayer.style.display = 'flex';
 
         const maxModal = document.getElementById('max-crash-modal');
-        const winModal = document.getElementById('win-update-modal');
-        const tempModal = document.getElementById('temporal-modal');
-        const deadModal = document.getElementById('deadline-modal');
-
-        maxModal.style.display = 'none';
-        winModal.style.display = 'none';
-        tempModal.style.display = 'none';
-        deadModal.style.display = 'none';
-
-        if (type === 'windows_update') {
-            winModal.style.display = 'flex';
-            document.getElementById('win-fail-reason').innerText = reason;
-        } else if (type === 'temporal_collapse') {
-            tempModal.style.display = 'flex';
-            document.getElementById('temporal-fail-reason').innerText = reason;
-        } else if (type === 'failed_deadline') {
-            deadModal.style.display = 'flex';
-            document.getElementById('deadline-fail-reason').innerText = reason;
-        } else if (type === 'notification_overflow') {
-            maxModal.style.display = 'flex';
+        maxModal.style.display = 'flex';
+        
+        if (type === 'notification_overflow') {
             document.getElementById('max-crash-header-title').innerText = "SYSTEM OVERFLOW - CHAT CRASH";
             document.getElementById('max-crash-title-text').innerText = "DIGITAL DROWNING!";
             document.getElementById('max-fail-reason').innerText = reason;
             document.getElementById('max-crash-details-text').innerHTML = "PROCESS: google_chat.exe | ERROR: HYPER_INTELLIGENT_MONSTER_CREATED<br>HARD_DRIVE: CONSUMED | RESIGNATION_LETTER: SUBMITTED";
         } else if (type === 'virus_overload') {
-            maxModal.style.display = 'flex';
             document.getElementById('max-crash-header-title').innerText = "MALWARE BOARD MEETING - OS LIQUIDATED";
             document.getElementById('max-crash-title-text').innerText = "MALWARE OVERLOAD: FILES HELD HOSTAGE!";
             document.getElementById('max-fail-reason').innerText = reason;
             document.getElementById('max-crash-details-text').innerHTML = "STATUS: C: DRIVE VOTING MAJORITY REACHED (5/5)<br>EMERGENCY BOARD MEETING: CONVENED<br>VERDICT: OPERATING SYSTEM LIQUIDATED";
         } else {
-            maxModal.style.display = 'flex';
             document.getElementById('max-crash-header-title').innerText = "3DSMAX.EXE - APPLICATION ERROR";
             document.getElementById('max-crash-title-text').innerText = "3DS MAX HAS CRASHED";
             document.getElementById('max-fail-reason').innerText = reason;
@@ -2789,6 +3090,7 @@
         document.getElementById('win-screen').style.display = 'none';
         document.getElementById('pause-overlay').style.display = 'none';
         document.getElementById('timesheet-modal').style.display = 'none';
+        document.getElementById('slowmo-dim-overlay').style.display = 'none';
         hideTrackHoursBtn();
         resetPanicEffects();
         gameState = 'MENU';
@@ -2798,7 +3100,524 @@
         startMusicIntervalId = setInterval(playStartMusicTick, 360);
     }
 
-    // Start Menu Ambient Lo-Fi Music Loop (~75 BPM)
+    // ==================== MIRANDA BOSS MINIGAME LOGIC ====================
+
+    // Configs
+    const TOTAL_COMMENTS = 22;      
+    const GAME_DURATION_SEC = 45;   // Increased by 10 seconds!
+
+    let commentsLeft = TOTAL_COMMENTS;
+    let commentTimerSec = GAME_DURATION_SEC;
+    let commentGameInterval = null;
+    let commentPhysicsAnimationFrame = null;
+    let commentBossAudioTimeout = null;
+    let activeCommentsData = [];
+    let isMinigameActive = false;
+
+    let denyActivated = false;
+
+    const commentDatabase = [
+        "FIX THIS NOW!!!",
+        "I DON'T LIKE THIS AT ALL!",
+        "MAKE MORE REALISTIC!!!",
+        "Improve this",
+        "CHANGE THE LIGHTING RIGHT NOW!",
+        "MAKE IT POP!!!",
+        "Wrong texture here",
+        "IS THIS FINAL QUALITY???",
+        "Needs more atmosphere",
+        "Can we make it warmer?",
+        "THIS IS UNACCEPTABLE!",
+        "Add more people",
+        "REMOVE THIS CHAIR NOW!",
+        "Make window brighter",
+        "TOO DARK OVERALL!!!",
+        "Match the PDF reference!",
+        "THIS LOOKS TERRIBLE!!!",
+        "WHY IS THIS RED???",
+        "TOTAL DISASTER!",
+        "PLEASE FIX IMMEDIATELY!!!",
+        "THE CLIENT IS CRYING!",
+        "REDO THE ENTIRE LIGHTING!!!",
+        "WHAT IS THIS MESH???",
+        "NOT WHAT WE AGREED ON!"
+    ];
+
+    function handleDenyEvasion(e) {
+        if (!denyActivated) return;
+
+        const btn = document.getElementById('miranda-deny-btn');
+        if (!btn) return;
+
+        const rect = btn.getBoundingClientRect();
+        const btnX = rect.left + rect.width / 2;
+        const btnY = rect.top + rect.height / 2;
+
+        const dx = btnX - e.clientX;
+        const dy = btnY - e.clientY;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist < 75 && dist > 0) {
+            const angle = Math.atan2(dy, dx);
+            let currentX = parseFloat(btn.dataset.x || 0);
+            let currentY = parseFloat(btn.dataset.y || 0);
+
+            currentX += Math.cos(angle) * 18;
+            currentY += Math.sin(angle) * 18;
+
+            const limitX = 110;
+            const limitY = 32;
+
+            const isCornered = (Math.abs(currentX) >= limitX || Math.abs(currentY) >= limitY);
+
+            currentX = Math.max(-limitX, Math.min(limitX, currentX));
+            currentY = Math.max(-limitY, Math.min(limitY, currentY));
+
+            btn.dataset.x = currentX;
+            btn.dataset.y = currentY;
+
+            btn.style.setProperty('--dx', `${currentX}px`);
+            btn.style.setProperty('--dy', `${currentY}px`);
+
+            if (isCornered) {
+                btn.classList.add('scared');
+            } else {
+                btn.classList.remove('scared');
+                btn.style.transform = `translate(${currentX}px, ${currentY}px)`;
+            }
+        }
+    }
+
+    function handleDenyClick(e) {
+        e.stopPropagation();
+        denyActivated = true;
+        playDenyErrorSound();
+
+        const btn = document.getElementById('miranda-deny-btn');
+        if (btn) {
+            btn.classList.add('error-flash');
+            setTimeout(() => btn.classList.remove('error-flash'), 250);
+        }
+    }
+
+    function handleMirandaCloseClick(e) {
+        e.stopPropagation();
+        playDenyErrorSound();
+
+        const warnEl = document.getElementById('miranda-warning-msg');
+        if (warnEl) {
+            warnEl.style.display = 'block';
+            warnEl.innerText = "THERE IS NO ESCAPE FROM MIRANDA";
+        }
+    }
+
+    function acceptMirandaComments() {
+        // Fix: Stop Level 4 gameplay music loop immediately to prevent double audio playback
+        if (musicIntervalId) {
+            clearInterval(musicIntervalId);
+            musicIntervalId = null;
+        }
+
+        try { playBossClickSound(); } catch(e) {}
+        document.getElementById('miranda-boss-overlay').style.display = 'none';
+        startCommentsMinigame();
+    }
+
+    function startCommentsMinigame() {
+        const viewport = document.getElementById('comments-minigame-viewport');
+        viewport.style.display = 'block';
+        
+        commentsLeft = TOTAL_COMMENTS;
+        commentTimerSec = GAME_DURATION_SEC;
+        isMinigameActive = true;
+        activeCommentsData = [];
+
+        const countEl = document.getElementById('comments-count');
+        if (countEl) countEl.innerText = `${commentsLeft} / ${TOTAL_COMMENTS}`;
+        const timerEl = document.getElementById('comments-timer');
+        if (timerEl) timerEl.innerText = `${commentTimerSec.toFixed(1)}s`;
+
+        try { generateCommentNodes(); } catch(e) { console.error("Error generating nodes:", e); }
+        
+        if (commentGameInterval) clearInterval(commentGameInterval);
+        commentGameInterval = setInterval(() => {
+            if (!isMinigameActive) return;
+
+            commentTimerSec -= 0.1;
+            if (commentTimerSec <= 0) {
+                commentTimerSec = 0;
+                endCommentsMinigame(false);
+            }
+            const tEl = document.getElementById('comments-timer');
+            if (tEl) tEl.innerText = `${commentTimerSec.toFixed(1)}s`;
+        }, 100);
+
+        try { runCommentsPhysicsLoop(); } catch(e) { console.error("Physics loop error:", e); }
+        try { startBossAudio(); } catch(e) { console.error("Boss audio error:", e); }
+    }
+
+    function generateCommentNodes() {
+        const cardContainer = document.getElementById('comment-cards-container');
+        const pinContainer = document.getElementById('target-pins-container');
+
+        if (!cardContainer || !pinContainer) return;
+
+        cardContainer.innerHTML = '';
+        pinContainer.innerHTML = '';
+
+        const viewportEl = document.getElementById('comments-minigame-viewport');
+        const rect = viewportEl ? viewportEl.getBoundingClientRect() : { width: 800, height: 450 };
+        let width = rect.width > 100 ? rect.width : (viewportEl ? viewportEl.clientWidth || 800 : 800);
+        let height = rect.height > 100 ? rect.height : (viewportEl ? viewportEl.clientHeight || 450 : 450);
+
+        const targetBoxW = width * 0.60;
+        const targetBoxH = height * 0.60;
+        const startX = width * 0.20;
+        const startY = height * 0.20;
+
+        const shuffled = [...commentDatabase].sort(() => 0.5 - Math.random());
+
+        for (let i = 0; i < TOTAL_COMMENTS; i++) {
+            const pinX = Math.floor(Math.random() * targetBoxW) + startX;
+            const pinY = Math.floor(Math.random() * targetBoxH) + startY;
+
+            const offsetX = (Math.random() - 0.5) * 180;
+            const offsetY = (Math.random() - 0.5) * 140;
+
+            let cardX = Math.max(20, Math.min(width - 160, pinX + offsetX));
+            let cardY = Math.max(60, Math.min(height - 40, pinY + offsetY));
+
+            const commentText = shuffled[i % shuffled.length];
+            const isDramatic = commentText.includes('!') || commentText === commentText.toUpperCase();
+
+            const pin = document.createElement('div');
+            pin.className = 'render-target-pin';
+            pin.style.left = `${pinX}px`;
+            pin.style.top = `${pinY}px`;
+            pinContainer.appendChild(pin);
+
+            const card = document.createElement('div');
+            card.className = `comment-card${isDramatic ? ' dramatic' : ''}`;
+            card.id = `comment_card_${i}`;
+            card.style.left = `${cardX}px`;
+            card.style.top = `${cardY}px`;
+
+            card.innerHTML = `
+                <div class="comment-checkbox"></div>
+                <span>${commentText}</span>
+            `;
+
+            card.onclick = (e) => {
+                e.stopPropagation();
+                checkOffComment(i);
+            };
+
+            cardContainer.appendChild(card);
+
+            let vx = (Math.random() - 0.5) * 2.2;
+            let vy = (Math.random() - 0.5) * 2.2;
+            if (Math.abs(vx) < 0.5) vx = vx < 0 ? -0.8 : 0.8;
+            if (Math.abs(vy) < 0.5) vy = vy < 0 ? -0.8 : 0.8;
+
+            activeCommentsData.push({
+                id: i,
+                x: cardX,
+                y: cardY,
+                vx: vx,
+                vy: vy,
+                width: 130,
+                height: 28,
+                pinX: pinX,
+                pinY: pinY,
+                checked: false
+            });
+        }
+
+        updateSvgLines();
+    }
+
+    function runCommentsPhysicsLoop() {
+        if (!isMinigameActive) return;
+
+        const viewportEl = document.getElementById('comments-minigame-viewport');
+        const rect = viewportEl ? viewportEl.getBoundingClientRect() : { width: 800, height: 450 };
+        const viewWidth = rect.width > 100 ? rect.width : (viewportEl ? viewportEl.clientWidth || 800 : 800);
+        const viewHeight = rect.height > 100 ? rect.height : (viewportEl ? viewportEl.clientHeight || 450 : 450);
+
+        const unchecked = activeCommentsData.filter(c => !c.checked);
+
+        unchecked.forEach(item => {
+            item.x += item.vx;
+            item.y += item.vy;
+
+            if (item.x <= 10) {
+                item.x = 10;
+                item.vx *= -1;
+            } else if (item.x + item.width >= viewWidth - 10) {
+                item.x = viewWidth - 10 - item.width;
+                item.vx *= -1;
+            }
+
+            if (item.y <= 50) {
+                item.y = 50;
+                item.vy *= -1;
+            } else if (item.y + item.height >= viewHeight - 10) {
+                item.y = viewHeight - 10 - item.height;
+                item.vy *= -1;
+            }
+        });
+
+        for (let i = 0; i < unchecked.length; i++) {
+            for (let j = i + 1; j < unchecked.length; j++) {
+                const a = unchecked[i];
+                const b = unchecked[j];
+
+                if (Math.abs(a.x - b.x) < 110 && Math.abs(a.y - b.y) < 26) {
+                    const tempVx = a.vx;
+                    const tempVy = a.vy;
+                    a.vx = b.vx;
+                    a.vy = b.vy;
+                    b.vx = tempVx;
+                    b.vy = tempVy;
+
+                    a.x += a.vx * 1.5;
+                    a.y += a.vy * 1.5;
+                }
+            }
+        }
+
+        unchecked.forEach(item => {
+            const el = document.getElementById(`comment_card_${item.id}`);
+            if (el) {
+                el.style.left = `${item.x}px`;
+                el.style.top = `${item.y}px`;
+            }
+        });
+
+        updateSvgLines();
+        commentPhysicsAnimationFrame = requestAnimationFrame(runCommentsPhysicsLoop);
+    }
+
+    function updateSvgLines() {
+        const svgLayer = document.getElementById('comments-svg-layer');
+        if (!svgLayer) return;
+        let svgHtml = '';
+
+        activeCommentsData.forEach(item => {
+            if (item.checked) return;
+
+            const startX = item.x + item.width / 2;
+            const startY = item.y + item.height / 2;
+
+            svgHtml += `
+                <line x1="${startX}" y1="${startY}" x2="${item.pinX}" y2="${item.pinY}" 
+                      stroke="#ff1744" stroke-width="1.5" stroke-dasharray="4" />
+            `;
+        });
+
+        svgLayer.innerHTML = svgHtml;
+    }
+
+    function checkOffComment(index) {
+        const item = activeCommentsData.find(c => c.id === index);
+        if (!item || item.checked) return;
+
+        item.checked = true;
+        commentsLeft--;
+
+        try { playCheckmarkSound(); } catch(e) {}
+
+        const cardEl = document.getElementById(`comment_card_${index}`);
+        if (cardEl) {
+            cardEl.classList.add('checked');
+            const box = cardEl.querySelector('.comment-checkbox');
+            if (box) {
+                box.style.background = '#00e676';
+                box.innerText = '✓';
+                box.style.color = '#000';
+            }
+        }
+
+        const countEl = document.getElementById('comments-count');
+        if (countEl) countEl.innerText = `${commentsLeft} / ${TOTAL_COMMENTS}`;
+        updateSvgLines();
+
+        if (commentsLeft <= 0) {
+            endCommentsMinigame(true);
+        }
+    }
+
+    function endCommentsMinigame(isVictory) {
+        isMinigameActive = false;
+        clearInterval(commentGameInterval);
+        if (commentPhysicsAnimationFrame) cancelAnimationFrame(commentPhysicsAnimationFrame);
+        stopBossAudio();
+
+        document.getElementById('comments-minigame-viewport').style.display = 'none';
+
+        if (isVictory) {
+            try { playWinSound(); } catch(e) {}
+            document.getElementById('miranda-victory-overlay').style.display = 'flex';
+        } else {
+            try { playDefeatSound(); } catch(e) {}
+            document.getElementById('miranda-defeat-overlay').style.display = 'flex';
+        }
+    }
+
+    function closeVictoryModal() {
+        document.getElementById('miranda-victory-overlay').style.display = 'none';
+        document.getElementById('slowmo-dim-overlay').style.display = 'none';
+        
+        bossDefeated = true;
+        isPaused = false;
+        gameMusicStep = 0;
+
+        if (musicIntervalId) clearInterval(musicIntervalId);
+        musicIntervalId = setInterval(playMusicTick, 200);
+    }
+
+    function closeDefeatModal() {
+        document.getElementById('miranda-defeat-overlay').style.display = 'none';
+        document.getElementById('slowmo-dim-overlay').style.display = 'none';
+        
+        gameOver("You failed to satisfy Miranda. With a single shake of her head, she opened a portal that sent you to Revision Purgatory for eternity.", "max_crash");
+    }
+
+    // Minigame Boss Audio Engine
+    const bossAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function startBossAudio() {
+        try {
+            if (bossAudioCtx.state === 'suspended') bossAudioCtx.resume();
+            
+            let step = 0;
+            const bossNotes = [110, 110, 220, 110, 130.81, 110, 146.83, 123.47];
+
+            function playNextBossTick() {
+                if (!isMinigameActive) return;
+
+                try {
+                    const osc = bossAudioCtx.createOscillator();
+                    const gain = bossAudioCtx.createGain();
+
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(bossNotes[step % bossNotes.length], bossAudioCtx.currentTime);
+
+                    gain.gain.setValueAtTime(0.12, bossAudioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, bossAudioCtx.currentTime + 0.12);
+
+                    osc.connect(gain);
+                    gain.connect(bossAudioCtx.destination);
+
+                    osc.start();
+                    osc.stop(bossAudioCtx.currentTime + 0.13);
+
+                    step++;
+                } catch(e) {}
+
+                const timePassed = GAME_DURATION_SEC - commentTimerSec;
+                const progressRatio = Math.max(0, Math.min(1, timePassed / GAME_DURATION_SEC));
+                const currentDelay = 150 - (progressRatio * 100);
+
+                commentBossAudioTimeout = setTimeout(playNextBossTick, currentDelay);
+            }
+
+            playNextBossTick();
+        } catch(e) { console.log("Boss audio error:", e); }
+    }
+
+    function stopBossAudio() {
+        if (commentBossAudioTimeout) clearTimeout(commentBossAudioTimeout);
+    }
+
+    function playDenyErrorSound() {
+        try {
+            if (bossAudioCtx.state === 'suspended') bossAudioCtx.resume();
+            const osc = bossAudioCtx.createOscillator();
+            const gain = bossAudioCtx.createGain();
+
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(140, bossAudioCtx.currentTime);
+            osc.frequency.setValueAtTime(90, bossAudioCtx.currentTime + 0.08);
+
+            gain.gain.setValueAtTime(0.18, bossAudioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, bossAudioCtx.currentTime + 0.25);
+
+            osc.connect(gain);
+            gain.connect(bossAudioCtx.destination);
+
+            osc.start();
+            osc.stop(bossAudioCtx.currentTime + 0.25);
+        } catch(e) {}
+    }
+
+    function playBossClickSound() {
+        try {
+            if (bossAudioCtx.state === 'suspended') bossAudioCtx.resume();
+            const osc = bossAudioCtx.createOscillator();
+            const gain = bossAudioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(150, bossAudioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(600, bossAudioCtx.currentTime + 0.2);
+            gain.gain.setValueAtTime(0.15, bossAudioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, bossAudioCtx.currentTime + 0.2);
+            osc.connect(gain); gain.connect(bossAudioCtx.destination);
+            osc.start(); osc.stop(bossAudioCtx.currentTime + 0.2);
+        } catch(e) {}
+    }
+
+    function playCheckmarkSound() {
+        try {
+            if (bossAudioCtx.state === 'suspended') bossAudioCtx.resume();
+            const osc = bossAudioCtx.createOscillator();
+            const gain = bossAudioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(587.33, bossAudioCtx.currentTime);
+            osc.frequency.setValueAtTime(880, bossAudioCtx.currentTime + 0.05);
+            gain.gain.setValueAtTime(0.1, bossAudioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, bossAudioCtx.currentTime + 0.15);
+            osc.connect(gain); gain.connect(bossAudioCtx.destination);
+            osc.start(); osc.stop(bossAudioCtx.currentTime + 0.15);
+        } catch(e) {}
+    }
+
+    function playWinSound() {
+        try {
+            if (bossAudioCtx.state === 'suspended') bossAudioCtx.resume();
+            [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
+                setTimeout(() => {
+                    const osc = bossAudioCtx.createOscillator();
+                    const gain = bossAudioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(f, bossAudioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.15, bossAudioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, bossAudioCtx.currentTime + 0.35);
+                    osc.connect(gain); gain.connect(bossAudioCtx.destination);
+                    osc.start(); osc.stop(bossAudioCtx.currentTime + 0.35);
+                }, i * 110);
+            });
+        } catch(e) {}
+    }
+
+    function playDefeatSound() {
+        try {
+            if (bossAudioCtx.state === 'suspended') bossAudioCtx.resume();
+            [300, 250, 200, 120].forEach((f, i) => {
+                setTimeout(() => {
+                    const osc = bossAudioCtx.createOscillator();
+                    const gain = bossAudioCtx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(f, bossAudioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.15, bossAudioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, bossAudioCtx.currentTime + 0.35);
+                    osc.connect(gain); gain.connect(bossAudioCtx.destination);
+                    osc.start(); osc.stop(bossAudioCtx.currentTime + 0.35);
+                }, i * 130);
+            });
+        } catch(e) {}
+    }
+
+    // Start Menu Ambient Lo-Fi Loop
     startMusicIntervalId = setInterval(playStartMusicTick, 360);
 </script>
 </body>
