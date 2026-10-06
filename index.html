@@ -58,15 +58,15 @@
             transition: border-color 0.2s, box-shadow 0.2s;
         }
 
-        /* Status Indicators Widget (Top Right of CRT Screen) */
+        /* Status Indicators Widget (Top Left of CRT Screen) */
         #status-indicators {
             position: absolute;
             top: 8px;
-            right: 8px;
+            left: 8px;
             display: flex;
             flex-direction: column;
             gap: 5px;
-            align-items: flex-end;
+            align-items: flex-start;
             z-index: 860;
             pointer-events: none;
         }
@@ -82,12 +82,6 @@
             font-weight: 800;
             box-shadow: 0 2px 8px rgba(0,0,0,0.6);
             backdrop-filter: blur(4px);
-            animation: statusIn 0.2s ease-out;
-        }
-
-        @keyframes statusIn {
-            from { transform: translateX(20px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
         }
 
         .status-badge.buff {
@@ -305,6 +299,36 @@
             overflow: hidden;
             animation: slideInLeft 0.25s ease-out;
             position: relative;
+        }
+
+        .chat-card.critical-action {
+            border: 2px solid #ff1744;
+            background: #fff5f5;
+            animation: slideInLeft 0.25s ease-out, criticalBreathingGlow 1.2s infinite alternate;
+        }
+
+        .chat-card.critical-action .chat-header {
+            background: linear-gradient(90deg, #d32f2f, #b71c1c);
+            color: #ffffff;
+            font-weight: 800;
+        }
+
+        .chat-card.critical-action .chat-sender {
+            color: #b71c1c;
+            font-weight: 800;
+        }
+
+        .chat-card.critical-action .chat-btn-accept {
+            background: #d32f2f;
+            box-shadow: 0 0 6px rgba(211, 47, 47, 0.6);
+        }
+        .chat-card.critical-action .chat-btn-accept:hover {
+            background: #b71c1c;
+        }
+
+        @keyframes criticalBreathingGlow {
+            from { box-shadow: 0 0 6px rgba(255, 23, 68, 0.6), 0 4px 15px rgba(0,0,0,0.5); }
+            to { box-shadow: 0 0 20px rgba(255, 23, 68, 1.0), 0 4px 15px rgba(0,0,0,0.5); }
         }
 
         @keyframes slideInLeft {
@@ -1210,7 +1234,7 @@
         #comments-minigame-viewport {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: #0f1218;
+            background: #000;
             display: none;
             z-index: 1100;
             overflow: hidden;
@@ -1221,18 +1245,8 @@
         #render-mockup-bg {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, #1a2230 0%, #0a0d12 100%) url('minigame.png') no-repeat center center;
+            background: #000 url('minigame.png') no-repeat center center;
             background-size: 100% 100%;
-            border: 2px solid #2d3748;
-        }
-
-        .render-wireframe-grid {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: 
-                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-            background-size: 25px 25px;
         }
 
         #comments-svg-layer {
@@ -1336,7 +1350,7 @@
 
     <!-- CRT Display Overlay Layer -->
     <div id="crt-screen">
-        <!-- Top Right Buff/Penalty Status Indicators -->
+        <!-- Top Left Buff/Penalty Status Indicators -->
         <div id="status-indicators"></div>
 
         <!-- Dynamic Progress Over Corona Window -->
@@ -1551,7 +1565,6 @@
     <!-- Comments Minigame Viewport -->
     <div id="comments-minigame-viewport">
         <div id="render-mockup-bg">
-            <div class="render-wireframe-grid"></div>
             <div id="target-pins-container"></div>
         </div>
 
@@ -1727,7 +1740,7 @@
             const chordIndex = Math.floor(startMusicStep / 8) % lofiChords.length;
             const currentChord = lofiChords[chordIndex];
             const isPulse = (startMusicStep % 2 === 0);
-            const velocity = isPulse ? 0.20 : 0.08;
+            const velocity = isPulse ? 0.30 : 0.12; // Raised start screen volume by 50%
 
             if (velocity > 0) {
                 const filter = audioCtx.createBiquadFilter();
@@ -1747,7 +1760,7 @@
 
                     const gain = audioCtx.createGain();
                     gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-                    gain.gain.linearRampToValueAtTime(0.25, audioCtx.currentTime + 0.04);
+                    gain.gain.linearRampToValueAtTime(0.375, audioCtx.currentTime + 0.04);
                     gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
 
                     osc.connect(gain);
@@ -2115,20 +2128,20 @@
             }
         }
 
-        // LEVEL PROGRESSION LOGIC
+        // LEVEL PROGRESSION LOGIC (LEVEL 3 STARTS AT 74%)
         if (renderProgress >= 90) {
             currentLevel = 4; // LEVEL 4: COSMETIC MAXIMUM STRESS
         } else if (hasTriggeredRevision) {
-            currentLevel = renderProgress < 70 ? 2 : 3;
+            currentLevel = renderProgress < 74 ? 2 : 3;
         } else {
             if (renderProgress < 10) currentLevel = 0;
             else if (renderProgress < 35) currentLevel = 1;
-            else if (renderProgress < 70) currentLevel = 2;
+            else if (renderProgress < 74) currentLevel = 2;
             else currentLevel = 3;
         }
 
-        // LEVEL 3 TAVIA HARDCODE SPAWN AT LEVEL 3 START
-        if (currentLevel === 3 && !taviaSpawned) {
+        // TAVIA HARDCODE SPAWN AT 70% PROGRESS (GIVES 4% BUFFER BEFORE LEVEL 3 STARTS AT 74%)
+        if (renderProgress >= 70 && !taviaSpawned) {
             taviaSpawned = true;
             createChatCard("Tavia Hunter", "UPDATE. TIMESHEETS. NOW.", "tavia_timesheets");
             usedMessages.add("Tavia Hunter:UPDATE. TIMESHEETS. NOW.");
@@ -2382,7 +2395,14 @@
         }
 
         const card = document.createElement('div');
-        card.className = 'chat-card';
+        
+        // Critical Action Styling for Tavia, Bec, and Bartosz
+        if (actionType && ['tavia_timesheets', 'bec_comments', 'bartosz'].includes(actionType)) {
+            card.className = 'chat-card critical-action';
+        } else {
+            card.className = 'chat-card';
+        }
+
         if (actionType) card.setAttribute('data-action', 'true');
 
         const id = 'chat_' + Date.now() + Math.random();
@@ -2511,15 +2531,16 @@
         closePopup(id);
 
         if (action === 'nadia_desk') {
-            pauseRenderWithLoading("Nadia was impressed and disgusted by the amount of trash on your desk", 3, false);
+            createConsequencePopup("Nadia was impressed and disgusted by the amount of trash on your desk", "");
         } else if (action === 'maciej') {
-            pauseRenderWithLoading("Maciej is now your best friend, good job", 3, false);
+            maciejBoostTimer = 200;
+            createConsequencePopup("Maciej is now your best friend, good job!", "Render speed increased +5% for 10 seconds!");
         } else if (action === 'giada') {
-            pauseRenderWithLoading("Archiving Scene...", 3, true);
+            pauseRenderWithLoading("Archiving Scene", 3, true);
         } else if (action === 'felipe') {
-            pauseRenderWithLoading("Uploading...", 3, true);
+            pauseRenderWithLoading("Uploading", 3, true);
         } else if (action === 'arnon') {
-            pauseRenderWithLoading("Saving Material...", 3, true);
+            pauseRenderWithLoading("Saving Material", 3, true);
         } else if (action === 'tavia_timesheets') {
             openTimesheetMinigame();
         } else if (action === 'bec_comments') {
@@ -2680,20 +2701,23 @@
         const id = 'loader_' + Date.now();
         popup.id = id;
 
+        const cleanMsg = msg.replace(/\.+$/, '');
+
         popup.innerHTML = `
             <div class="popup-header"><span>3ds Max System Process</span></div>
             <div class="popup-body">
-                <div style="font-weight:bold; margin-bottom: 6px;">${msg}</div>
-                <div id="loader_dots_${id}">...</div>
+                <div style="font-weight:bold; margin-bottom: 6px;">
+                    <span>${cleanMsg}</span><span id="loader_dots_${id}">...</span>
+                </div>
             </div>
         `;
         layer.appendChild(popup);
 
-        let dotCount = 0;
+        let dotCount = 3;
         const interval = setInterval(() => {
-            dotCount = (dotCount + 1) % 4;
+            dotCount = (dotCount % 3) + 1;
             const dotsEl = document.getElementById(`loader_dots_${id}`);
-            if (dotsEl) dotsEl.innerText = '.'.repeat(dotCount + 1);
+            if (dotsEl) dotsEl.innerText = '.'.repeat(dotCount);
         }, 400);
 
         setTimeout(() => {
@@ -2798,6 +2822,63 @@
         createGenericPopup("ANTIVIRUS AVAILABLE", "Panda AntiVirus #01 Ready! Clean ALL active viruses in 5s?", 'antivirus');
     }
 
+    function getPopupPosition() {
+        const crt = document.getElementById('crt-screen');
+        const crtW = crt ? crt.clientWidth : 380;
+        const crtH = crt ? crt.clientHeight : 260;
+
+        const popupW = 210;
+        const popupH = 130;
+
+        const maxX = Math.max(10, crtW - popupW - 10);
+        const maxY = Math.max(10, crtH - popupH - 10);
+
+        // Level 4: Cosmetic chaos, random placement anywhere
+        if (currentLevel === 4) {
+            const posX = Math.floor(Math.random() * maxX) + 10;
+            const posY = Math.floor(Math.random() * maxY) + 10;
+            return { x: posX, y: posY };
+        }
+
+        // Levels 0-3: Position popup dynamically without covering existing popups
+        const existingPopups = Array.from(document.querySelectorAll('#popup-layer .popup-window'));
+        const existingRects = existingPopups.map(el => {
+            return {
+                left: el.offsetLeft,
+                top: el.offsetTop,
+                right: el.offsetLeft + (el.offsetWidth || popupW),
+                bottom: el.offsetTop + (el.offsetHeight || popupH)
+            };
+        });
+
+        let bestX = Math.floor(Math.random() * maxX) + 10;
+        let bestY = Math.floor(Math.random() * maxY) + 10;
+
+        for (let i = 0; i < 40; i++) {
+            const candX = Math.floor(Math.random() * maxX) + 10;
+            const candY = Math.floor(Math.random() * maxY) + 10;
+
+            const candRect = {
+                left: candX,
+                top: candY,
+                right: candX + popupW,
+                bottom: candY + popupH
+            };
+
+            const overlaps = existingRects.some(r => {
+                return !(candRect.right < r.left || candRect.left > r.right || candRect.bottom < r.top || candRect.top > r.bottom);
+            });
+
+            if (!overlaps) {
+                bestX = candX;
+                bestY = candY;
+                break;
+            }
+        }
+
+        return { x: bestX, y: bestY };
+    }
+
     function createGenericPopup(title, msg, type, subtext = '') {
         const layer = document.getElementById('popup-layer');
         const popup = document.createElement('div');
@@ -2810,11 +2891,9 @@
 
         popup.className = themeClass;
 
-        const posX = Math.floor(Math.random() * 200) + 10;
-        const posY = Math.floor(Math.random() * 140) + 10;
-
-        popup.style.left = `${posX}px`;
-        popup.style.top = `${posY}px`;
+        const pos = getPopupPosition();
+        popup.style.left = `${pos.x}px`;
+        popup.style.top = `${pos.y}px`;
 
         const id = 'pop_' + Date.now() + Math.random();
         popup.id = id;
@@ -3104,7 +3183,7 @@
 
     // Configs
     const TOTAL_COMMENTS = 22;      
-    const GAME_DURATION_SEC = 45;   // Increased by 10 seconds!
+    const GAME_DURATION_SEC = 45;   
 
     let commentsLeft = TOTAL_COMMENTS;
     let commentTimerSec = GAME_DURATION_SEC;
@@ -3212,7 +3291,6 @@
     }
 
     function acceptMirandaComments() {
-        // Fix: Stop Level 4 gameplay music loop immediately to prevent double audio playback
         if (musicIntervalId) {
             clearInterval(musicIntervalId);
             musicIntervalId = null;
