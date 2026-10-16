@@ -78,7 +78,7 @@
             padding: 3px 8px;
             border-radius: 4px;
             font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 11px;
+            font-size: 13px;
             font-weight: 800;
             box-shadow: 0 2px 8px rgba(0,0,0,0.6);
             backdrop-filter: blur(4px);
@@ -154,7 +154,7 @@
             left: 50%;
             transform: translateX(-50%);
             top: 61.8%;
-            font-size: 11px;
+            font-size: 13px;
             font-weight: bold;
             color: #ffffff;
             font-family: monospace;
@@ -191,7 +191,7 @@
             bottom: 3px;
             right: 8px;
             font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 13px;
+            font-size: 15px;
             font-weight: 800;
             color: #00e676;
             background: #111827;
@@ -235,10 +235,11 @@
             top: 78.2%;
             left: 26.2%;
             width: 47.6%;
+            transform: translateY(70%);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 11px;
+            font-size: 13px;
             font-weight: bold;
             color: #ffffff;
             background: rgba(18, 14, 10, 0.55);
@@ -255,7 +256,7 @@
             padding: 3px 8px;
             border-radius: 4px;
             font-weight: bold;
-            font-size: 10px;
+            font-size: 12px;
             cursor: pointer;
             border: none;
             text-transform: uppercase;
@@ -326,6 +327,14 @@
             background: #b71c1c;
         }
 
+        .chat-card.friendly-action .chat-btn-accept {
+            background: #0f9d58;
+            box-shadow: 0 0 6px rgba(15, 157, 88, 0.6);
+        }
+        .chat-card.friendly-action .chat-btn-accept:hover {
+            background: #0b8043;
+        }
+
         @keyframes criticalBreathingGlow {
             from { box-shadow: 0 0 6px rgba(255, 23, 68, 0.6), 0 4px 15px rgba(0,0,0,0.5); }
             to { box-shadow: 0 0 20px rgba(255, 23, 68, 1.0), 0 4px 15px rgba(0,0,0,0.5); }
@@ -343,7 +352,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 10px;
+            font-size: 12px;
             font-weight: bold;
         }
 
@@ -373,13 +382,13 @@
         }
 
         .chat-sender {
-            font-size: 10px;
+            font-size: 12px;
             font-weight: 700;
             color: #202124;
         }
 
         .chat-msg {
-            font-size: 10px;
+            font-size: 12px;
             color: #3c4043;
             line-height: 1.25;
             margin-top: 2px;
@@ -397,7 +406,7 @@
             border: none;
             padding: 3px 6px;
             border-radius: 3px;
-            font-size: 9px;
+            font-size: 11px;
             font-weight: bold;
             cursor: pointer;
             flex-grow: 1;
@@ -410,7 +419,7 @@
             border: 1px solid #dadce0;
             padding: 3px 6px;
             border-radius: 3px;
-            font-size: 9px;
+            font-size: 11px;
             font-weight: bold;
             cursor: pointer;
         }
@@ -483,7 +492,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 10px;
+            font-size: 12px;
             font-weight: bold;
             color: #e0e6ed;
             border-bottom: 1px solid #34425a;
@@ -506,15 +515,15 @@
 
         .popup-body {
             padding: 10px;
-            font-size: 10px;
+            font-size: 12px;
             color: #e0e6ed;
             text-align: center;
         }
 
         .popup-subtext {
-            font-size: 9px;
-            font-style: italic;
-            color: #ff8a80;
+            font-size: 11px;
+            font-style: normal;
+            color: #d0d7de;
             margin-top: 4px;
             display: block;
         }
@@ -528,7 +537,7 @@
             border-radius: 3px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 10px;
+            font-size: 12px;
             width: 100%;
         }
         .popup-btn:hover { background: #00695c; }
@@ -545,7 +554,7 @@
             color: #ffffff;
             border: 1px solid #a5d6a7;
             padding: 5px 10px;
-            font-size: 10px;
+            font-size: 12px;
             font-weight: bold;
             border-radius: 4px;
             cursor: pointer;
@@ -563,7 +572,7 @@
             position: absolute;
             bottom: 24px;
             right: 10px;
-            width: 200px;
+            width: 240px;
             background: #1c222e;
             border: 1px solid #0078d4;
             border-left: 4px solid #ff1744;
@@ -575,7 +584,7 @@
         }
 
         .toast-header {
-            font-size: 10px;
+            font-size: 12px;
             font-weight: bold;
             color: #ff5252;
             margin-bottom: 4px;
@@ -584,7 +593,7 @@
         }
 
         .toast-body {
-            font-size: 10px;
+            font-size: 12px;
             color: #c5d1e0;
             margin-bottom: 8px;
             line-height: 1.3;
@@ -608,8 +617,9 @@
             border-radius: 3px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 10px;
+            font-size: 12px;
             flex-grow: 1;
+            white-space: nowrap;
         }
 
         .btn-restart {
@@ -619,7 +629,8 @@
             padding: 4px 6px;
             border-radius: 3px;
             cursor: pointer;
-            font-size: 10px;
+            font-size: 12px;
+            white-space: nowrap;
         }
 
         /* Pause Overlay */
@@ -640,7 +651,7 @@
             border-radius: 6px;
             padding: 12px 24px;
             color: #ff9800;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
             letter-spacing: 2px;
             box-shadow: 0 0 20px rgba(255, 152, 0, 0.5);
@@ -671,7 +682,8 @@
         }
 
         .modal-popup {
-            width: 88%;
+            width: 48%;
+            min-width: 340px;
             max-height: 85%;
             display: flex;
             flex-direction: column;
@@ -696,7 +708,7 @@
             background: linear-gradient(90deg, #d32f2f, #b71c1c);
             color: #ffffff;
             padding: 6px 10px;
-            font-size: 10px;
+            font-size: 12px;
             font-weight: bold;
             display: flex;
             justify-content: space-between;
@@ -728,7 +740,7 @@
         }
 
         .max-crash-title {
-            font-size: 12px;
+            font-size: 15px;
             font-weight: 800;
             color: #b71c1c;
             margin-bottom: 4px;
@@ -736,21 +748,21 @@
         }
 
         .max-crash-desc {
-            font-size: 10px;
+            font-size: 13px;
             color: #37474f;
-            line-height: 1.35;
+            line-height: 1.45;
         }
 
         .max-crash-details {
             background: #ffebee;
             border: 1px solid #ffcdd2;
             border-left: 3px solid #d32f2f;
-            padding: 6px 8px;
+            padding: 8px 10px;
             font-family: monospace;
-            font-size: 9px;
+            font-size: 11px;
             color: #b71c1c;
             border-radius: 3px;
-            line-height: 1.35;
+            line-height: 1.4;
         }
 
         .btn-max-restart {
@@ -759,7 +771,7 @@
             border: none;
             padding: 6px 14px;
             font-weight: bold;
-            font-size: 10px;
+            font-size: 12px;
             border-radius: 3px;
             cursor: pointer;
             align-self: flex-end;
@@ -784,7 +796,7 @@
             background: linear-gradient(90deg, #0f9d58, #00e676);
             color: #0d2818;
             padding: 6px 10px;
-            font-size: 10px;
+            font-size: 12px;
             font-weight: 800;
             display: flex;
             justify-content: space-between;
@@ -817,7 +829,7 @@
         }
 
         .win-success-title {
-            font-size: 13px;
+            font-size: 16px;
             font-weight: 800;
             color: #00e676;
             margin-bottom: 6px;
@@ -827,9 +839,9 @@
         }
 
         .win-success-desc {
-            font-size: 10px;
+            font-size: 13px;
             color: #e8f5e9;
-            line-height: 1.4;
+            line-height: 1.45;
         }
 
         .win-success-details {
@@ -838,7 +850,7 @@
             border-left: 3px solid #00e676;
             padding: 8px 10px;
             font-family: monospace;
-            font-size: 9px;
+            font-size: 11px;
             color: #b9f6ca;
             border-radius: 3px;
             line-height: 1.4;
@@ -850,7 +862,7 @@
             border: none;
             padding: 8px 16px;
             font-weight: 800;
-            font-size: 10px;
+            font-size: 12px;
             border-radius: 3px;
             cursor: pointer;
             align-self: flex-end;
@@ -921,7 +933,7 @@
             background: linear-gradient(90deg, #800d0d, #d32f2f);
             color: #ffffff;
             padding: 6px 10px;
-            font-size: 11px;
+            font-size: 13px;
             font-weight: 800;
             display: flex;
             justify-content: space-between;
@@ -974,7 +986,7 @@
         }
 
         .miranda-sender {
-            font-size: 11px;
+            font-size: 13px;
             letter-spacing: 1.5px;
             text-transform: uppercase;
             color: #ff5252;
@@ -984,7 +996,7 @@
         }
 
         .miranda-msg {
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 700;
             color: #ffffff;
             line-height: 1.35;
@@ -992,7 +1004,7 @@
         }
 
         #miranda-disclaimer {
-            font-size: 11px;
+            font-size: 13px;
             font-style: italic;
             color: #ffb74d;
             margin-top: 2px;
@@ -1014,7 +1026,7 @@
             color: #05140a;
             border: 1px solid #a5d6a7;
             padding: 10px 24px;
-            font-size: 13px;
+            font-size: 15px;
             font-weight: 800;
             border-radius: 3px;
             cursor: pointer;
@@ -1033,7 +1045,7 @@
             color: #d1d5db;
             border: 1px solid #7f1d1d;
             padding: 5px 12px;
-            font-size: 10px;
+            font-size: 12px;
             font-weight: bold;
             border-radius: 3px;
             cursor: pointer;
@@ -1067,7 +1079,7 @@
         #miranda-warning-msg {
             display: none;
             color: #ff5252;
-            font-size: 11px;
+            font-size: 13px;
             font-weight: 800;
             font-family: 'Consolas', 'Courier New', monospace;
             letter-spacing: 1px;
@@ -1101,7 +1113,7 @@
             background: linear-gradient(90deg, #0f9d58, #00e676);
             color: #05140a;
             padding: 6px 10px;
-            font-size: 11px;
+            font-size: 13px;
             font-weight: 800;
             display: flex;
             justify-content: space-between;
@@ -1129,7 +1141,7 @@
         }
 
         .miranda-victory-sender {
-            font-size: 13px;
+            font-size: 15px;
             letter-spacing: 1.5px;
             text-transform: uppercase;
             color: #00e676;
@@ -1143,7 +1155,7 @@
             color: #05140a;
             border: none;
             padding: 10px 28px;
-            font-size: 12px;
+            font-size: 14px;
             font-weight: 800;
             border-radius: 3px;
             cursor: pointer;
@@ -1174,7 +1186,7 @@
             background: linear-gradient(90deg, #800d0d, #d32f2f);
             color: #ffffff;
             padding: 6px 10px;
-            font-size: 11px;
+            font-size: 13px;
             font-weight: 800;
             display: flex;
             justify-content: space-between;
@@ -1202,7 +1214,7 @@
         }
 
         .miranda-defeat-sender {
-            font-size: 13px;
+            font-size: 15px;
             letter-spacing: 1.5px;
             text-transform: uppercase;
             color: #ff5252;
@@ -1216,7 +1228,7 @@
             color: #ffffff;
             border: none;
             padding: 10px 28px;
-            font-size: 12px;
+            font-size: 14px;
             font-weight: 800;
             border-radius: 3px;
             cursor: pointer;
@@ -1273,7 +1285,7 @@
 
         .comments-hud-stat {
             font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 13px;
+            font-size: 15px;
             font-weight: 800;
             color: #ffffff;
         }
@@ -1285,7 +1297,7 @@
             color: #1a202c;
             padding: 5px 9px;
             border-radius: 4px;
-            font-size: 10px;
+            font-size: 12px;
             font-weight: 700;
             box-shadow: 0 4px 15px rgba(0,0,0,0.6);
             border-left: 4px solid #ff1744;
@@ -1416,7 +1428,7 @@
         </div>
 
         <!-- Hidden Track Hours Button -->
-        <button id="track-hours-btn" style="display:none;" onclick="openTimesheetMinigame()">TRACK MY HOURS</button>
+        <button id="track-hours-btn" style="display:none;" onclick="openTimesheetMinigame()" onpointerdown="openTimesheetMinigame()">TRACK MY HOURS</button>
 
         <!-- Pause Overlay -->
         <div id="pause-overlay">
@@ -1506,10 +1518,10 @@
             <div class="miranda-popup-body">
                 <div class="miranda-avatar-badge">M</div>
                 <div class="miranda-sender">MIRANDA ROMER</div>
-                <div class="miranda-msg">"So sorry, but I have just a few more comments"</div>
+                <div class="miranda-msg">"Sorry, but I have just a few more comments"</div>
                 
                 <div id="miranda-disclaimer">
-                    "Don't worry, it's not gonna be that bad... right?"
+                    "It can't be that bad... right?... RIGHT?"
                 </div>
 
                 <div id="miranda-warning-msg">THERE IS NO ESCAPE FROM MIRANDA</div>
@@ -1533,8 +1545,8 @@
                 <div class="miranda-victory-avatar">😊</div>
                 <div class="miranda-victory-sender">MIRANDA HAS SMILED</div>
                 <div class="miranda-msg">
-                    She opened your file, paused, and slowly nodded in a subtle approval, saying the magical words: 
-                    <br><strong style="color:#00e676; font-size:16px;">"it's okay"</strong>
+                    She opened your file, paused, and unable to find a single imperfection, she smiled. 
+                    <br><strong style="color:#00e676; font-size:16px;">"Approved"</strong>
                 </div>
                 
                 <button class="btn-miranda-win" onclick="closeVictoryModal()">CLAIM VICTORY</button>
@@ -1553,7 +1565,7 @@
                 <div class="miranda-defeat-avatar">💀</div>
                 <div class="miranda-defeat-sender">CREATIVE CONDEMNATION</div>
                 <div class="miranda-msg">
-                    You failed to satisfy Miranda. With a single shake of her head, she opened a portal that sent you to the 
+                    You failed to satisfy Miranda. You have been sent to the 
                     <strong style="color:#ff5252;">Revision Purgatory</strong> for eternity.
                 </div>
                 
@@ -1571,7 +1583,7 @@
         <svg id="comments-svg-layer"></svg>
 
         <div id="comments-hud">
-            <div class="comments-hud-stat">TIME LEFT: <span id="comments-timer">45.0s</span></div>
+            <div class="comments-hud-stat">TIME LEFT: <span id="comments-timer">40.0s</span></div>
             <div class="comments-hud-stat">REVISIONS LEFT: <span id="comments-count">0 / 0</span></div>
         </div>
 
@@ -1586,58 +1598,65 @@
     const LEVEL_0_MESSAGES = [
         { name: "Phoebe Duckworth", msg: "HelloOoO Hope you are feeling fabulous today :)" },
         { name: "Sarah Cope", msg: "Good morning, such a lovely day isn't it?" },
+        { name: "Luis E Inciarte", msg: "Woop woop!" },
         { name: "Eli Perret", msg: "Hola, todo bien?" },
-        { name: "Nataliia Tyarenko", msg: "Hi ^_^ How's your day going?" }
+        { name: "Nataliia Tyarenko", msg: "Hi ^_^" }
     ];
 
     const LEVEL_1_JOKES = [
         { name: "Sarah Cope", msg: "Any updates on that image?" },
         { name: "Eli Perret", msg: "When do you expect to finish that render?" },
-        { name: "Phoebe Duckworth", msg: "How are you tracking with that image? No rush" },
-        { name: "Andrei Dolnikov", msg: "Did you watch the latest NINJO video? You should" },
-        { name: "Andrei Dolnikov", msg: "Did I mention how good the latest NINJO video was?" },
+        { name: "Phoebe Duckworth", msg: "How are you tracking with that image?" },
+        { name: "NINJO", msg: "It's a Great day to watch our latest video" },
+        { name: "NIJO", msg: "Remember you HAVE you watch the video." },
         { name: "Marta Paterlini", msg: "Hello, I would like to send that out today" },
+        { name: "Sarah Cope", msg: "Would be nice to send that today" },
+        { name: "Tavia Hunter", msg: "Remember to update your timesheets :)" },
         { name: "Eli Perret", msg: "Any news on that image? No rush" }
     ];
 
     const LEVEL_1_ACTIONS = [
-        { name: "Nadia Monte", msg: "Can I get a picture of your desk? It's for a game :)", action: 'nadia_desk' },
-        { name: "Maciej Kozlowski", msg: "This is looking great, Approved on my end :)", action: 'maciej' }
+        { name: "Nadia Monte", msg: "Can I get a picture of your desk?", action: 'nadia_desk' },
+        { name: "Maciej Kozlowski", msg: "This is looking great! :)", action: 'maciej' }
     ];
 
     const LEVEL_2_JOKES = [
-        { name: "Sarah Cope", msg: "Can you wrap this up in the next 12 seconds?" },
-        { name: "Matthew Charter", msg: "There's a 2Tb folder with your name in the S Drive..." },
-        { name: "Eli Perret", msg: "I need to send this right now, gotta go skiing in 10 min" },
+        { name: "Sarah Cope", msg: "Can you wrap this up in the next 11 seconds?" },
+        { name: "Matthew Charter", msg: "There's a 2Tb folder with your name in the S Drive" },
+        { name: "Eli Perret", msg: "Hurry up, gotta go skiing in 10 min" },
         { name: "Eli Perret", msg: "Cmon! Clock's ticking!!" },
-        { name: "Andrei Dolnikov", msg: "Did I mention the new video from NINJO?" },
-        { name: "Phoebe Duckworth", msg: "Time is running up!" },
+        { name: "NINJO", msg: "WATCH THE VIDEO" },
+        { name: "NINJO", msg: "DO YOU WANT TO GET HACKED!?!?1!1!!" },
+        { name: "Phoebe Duckworth", msg: "Time is running out!" },
         { name: "Eli Perret", msg: "YO! ARE YOU EVEN THERE??" },
         { name: "Tavia Hunter", msg: "YOU NEED TO UPDATE YOUR TIMESHEETS" },
-        { name: "Tavia Hunter", msg: "Please track your hours..." }
+        { name: "Tavia Hunter", msg: "IF YOU DON'T TRACK YOUR HOURS I SWEAR I'M GONNA..." }
     ];
 
     const LEVEL_2_ACTIONS = [
         { name: "Giada Filippetti", msg: "Could you upload that scene for me?", action: 'giada' },
         { name: "Felipe Broering", msg: "You haven't uploaded a single image to Trello", action: 'felipe' },
-        { name: "Arnon Rodrigues", msg: "I need you brick material, can you save selected?", action: 'arnon' }
+        { name: "Arnon Rodrigues", msg: "Can I get a save selected of that concrete?", action: 'arnon' }
     ];
 
     const LEVEL_3_JOKES = [
         { name: "Bec Byrne", msg: "WE ARE GONNA LOSE THE CLIENT!" },
+        { name: "Cassidy Storms", msg: "WHY DO YOU DO THIS TO US????" },
         { name: "Cassidy Storms", msg: "HOW CAN YOU BE SO SLOW??" },
         { name: "Bec Byrne", msg: "I NEED THAT IMAGE RIGHT NOW" },
         { name: "Bec Byrne", msg: "PLEASE HURRY UP EVERYTHING IS ON FIRE!" },
         { name: "Eli Perret", msg: "THIS IS LITERALLY LIFE OR DEATH" },
         { name: "Cassidy Storms", msg: "THE WHOLE WORLD DEPENDS ON THIS DELIVERY" },
+        { name: "Cassidy Storms", msg: "AAAAAAAAHHHH" },
+        { name: "Phoebe Duckworth", msg: "DO NOT PANIC! I REPEAT, DO NOT PANIC!!" },
         { name: "Phoebe Duckworth", msg: "THE SKY IS FALLING!" },
         { name: "Matthew Charter", msg: "It was nice knowing you..." },
         { name: "Eli Perret", msg: "HELP!" }
     ];
 
     const LEVEL_3_ACTIONS = [
-        { name: "Bec Byrne", msg: "We just got a new pdf with 200 comments", action: 'bec_comments' },
-        { name: "Bartosz Grochulski", msg: "You are using the wrong model...", action: 'bartosz' }
+        { name: "Bec Byrne", msg: "I JUST GOT A 200 COMMENT PDF FROM THE CLIENT", action: 'bec_comments' },
+        { name: "Bartosz Grochulski", msg: "YOU ARE USING THE WRONG MODEL", action: 'bartosz' }
     ];
 
     const allChatPool = [...LEVEL_0_MESSAGES, ...LEVEL_1_JOKES, ...LEVEL_2_JOKES, ...LEVEL_3_JOKES];
@@ -1822,6 +1841,30 @@
                 return;
             }
 
+            if (isReverseTime) {
+                // Base theme notes played in reverse with a subtle pitch-bend shift
+                const reverseThemeNotes = [523.25, 369.99, 493.88, 349.23, 493.88, 349.23];
+                const baseNote = reverseThemeNotes[gameMusicStep % reverseThemeNotes.length];
+
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(baseNote * 0.95, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(baseNote * 1.05, audioCtx.currentTime + 0.18);
+
+                gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.18);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.20);
+
+                gameMusicStep++;
+                clearInterval(musicIntervalId);
+                musicIntervalId = setInterval(playMusicTick, 220);
+                return;
+            }
+
             const baseFreq = glitchNotes[gameMusicStep % glitchNotes.length];
             let progressSpeedRatio = 1.0 + (renderProgress / 100) * 2.0; 
             if (renderProgress >= 90) progressSpeedRatio += 0.8;
@@ -1864,6 +1907,14 @@
                 gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
                 osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+            } else if (type === 'critical_action') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(440, audioCtx.currentTime + 0.08);
+                osc.frequency.setValueAtTime(165, audioCtx.currentTime + 0.16);
+                gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.32);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.32);
             } else if (type === 'virus') {
                 osc.type = 'sawtooth';
                 osc.frequency.setValueAtTime(200, audioCtx.currentTime);
@@ -2267,6 +2318,7 @@
 
         if (renderProgress >= 100) {
             renderProgress = 100;
+            updateFloatingTrackBtn();
             updateHUD(multiplier);
             updateStatusIndicators();
             winGame();
@@ -2312,6 +2364,7 @@
             if (updateSpawnTimer > 500 && !isUpdateActive && renderProgress < 90) { triggerWindowsUpdate(); updateSpawnTimer = 0; }
         }
 
+        updateFloatingTrackBtn();
         updateHUD(multiplier);
         updateStatusIndicators();
     }
@@ -2399,6 +2452,8 @@
         // Critical Action Styling for Tavia, Bec, and Bartosz
         if (actionType && ['tavia_timesheets', 'bec_comments', 'bartosz'].includes(actionType)) {
             card.className = 'chat-card critical-action';
+        } else if (actionType && ['nadia_desk', 'maciej'].includes(actionType)) {
+            card.className = 'chat-card friendly-action';
         } else {
             card.className = 'chat-card';
         }
@@ -2408,7 +2463,8 @@
         const id = 'chat_' + Date.now() + Math.random();
         card.id = id;
 
-        playSound('chat');
+        const isRedAlert = actionType && ['tavia_timesheets', 'bec_comments', 'bartosz'].includes(actionType);
+        if (isRedAlert) { playSound('critical_action'); } else { playSound('chat'); }
         const initial = senderName[0];
 
         if (actionType) {
@@ -2531,10 +2587,10 @@
         closePopup(id);
 
         if (action === 'nadia_desk') {
-            createConsequencePopup("Nadia was impressed and disgusted by the amount of trash on your desk", "");
+            createConsequencePopup("Eww, you should clean that", "");
         } else if (action === 'maciej') {
             maciejBoostTimer = 200;
-            createConsequencePopup("Maciej is now your best friend, good job!", "Render speed increased +5% for 10 seconds!");
+            createConsequencePopup("Maciej is now your best friend, good job.", "+5% for 10 seconds!");
         } else if (action === 'giada') {
             pauseRenderWithLoading("Archiving Scene", 3, true);
         } else if (action === 'felipe') {
@@ -2557,27 +2613,27 @@
         closePopup(id);
 
         if (action === 'nadia_desk') {
-            createConsequencePopup("Nadia doesn't like you anymore", "");
+            createConsequencePopup("Nadia doesn't like you anymore.", "");
         } else if (action === 'maciej') {
             createConsequencePopup("Maciej's heart was just broken, poor Maciej :(", "");
         } else if (action === 'giada') {
-            createConsequencePopup("You said NO to Giada, HOW DARE YOU?", "Render paused for 10 seconds.");
+            createConsequencePopup("You said NO to Giada, HOW DARE YOU?", "Paused for 10 seconds.");
             pauseTimer = 200;
         } else if (action === 'felipe') {
-            createConsequencePopup("Felipe is not angy, he's just disappointed", "Render paused for 10 seconds.");
+            createConsequencePopup("Felipe is not angy, he's just disappointed", "Paused for 10 seconds.");
             pauseTimer = 200;
         } else if (action === 'arnon') {
-            createConsequencePopup("You left Arnon waiting all day, you are a bad person", "Render paused for 10 seconds.");
+            createConsequencePopup("You left Arnon waiting all day, you are a bad person", "Paused for 10 seconds.");
             pauseTimer = 200;
         } else if (action === 'tavia_timesheets') {
             handleTimesheetDecline();
         } else if (action === 'bec_comments') {
             l3RevisionTriggered = true;
-            createConsequencePopup("The client is not gonna love this...", "Render speed decreased by 50% for 10 seconds.");
+            createConsequencePopup("The client is not gonna love this...", "-50% for 10 seconds.");
             slow50Timer = 200;
         } else if (action === 'bartosz') {
             l3RevisionTriggered = true;
-            createConsequencePopup("I KNOW WHAT YOU DID!", "Render speed decreased by 50% for 10 seconds.");
+            createConsequencePopup("I KNOW WHAT YOU DID!", "-50% for 10 seconds.");
             slow50Timer = 200;
         }
     }
@@ -2585,6 +2641,8 @@
     // Timesheet Minigame
     function openTimesheetMinigame() {
         if (isPaused) return;
+        isReverseTime = false;
+        hideTrackHoursBtn();
         const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
         const prefilled = [Math.floor(Math.random() * 2), Math.floor(Math.random() * 2) + 3];
         
@@ -2678,12 +2736,50 @@
         createConsequencePopup("YOU CAN’T ESCAPE FROM TIME", "Click 'TRACK MY HOURS' to log your timesheets!");
     }
 
+    let trackBtnX = 50;
+    let trackBtnY = 50;
+    let trackBtnVx = 4.4;
+    let trackBtnVy = 3.2;
+
     function spawnTrackHoursBtn() {
         const btn = document.getElementById('track-hours-btn');
         if (!btn) return;
-        btn.style.left = `${Math.floor(Math.random() * 180) + 20}px`;
-        btn.style.top = `${Math.floor(Math.random() * 120) + 30}px`;
+        const crt = document.getElementById('crt-screen');
+        const crtW = crt ? crt.clientWidth : 300;
+        const crtH = crt ? crt.clientHeight : 200;
+        
+        trackBtnX = Math.floor(Math.random() * Math.max(20, crtW - 120)) + 20;
+        trackBtnY = Math.floor(Math.random() * Math.max(20, crtH - 60)) + 20;
+        trackBtnVx = Math.random() < 0.5 ? 4.4 : -4.4;
+        trackBtnVy = Math.random() < 0.5 ? 3.2 : -3.2;
+
+        btn.style.left = `${trackBtnX}px`;
+        btn.style.top = `${trackBtnY}px`;
         btn.style.display = 'block';
+    }
+
+    function updateFloatingTrackBtn() {
+        if (!isReverseTime) return;
+        const btn = document.getElementById('track-hours-btn');
+        if (!btn || btn.style.display === 'none') return;
+
+        const crt = document.getElementById('crt-screen');
+        const crtW = crt ? crt.clientWidth : 300;
+        const crtH = crt ? crt.clientHeight : 200;
+        const btnW = btn.offsetWidth || 100;
+        const btnH = btn.offsetHeight || 30;
+
+        trackBtnX += trackBtnVx;
+        trackBtnY += trackBtnVy;
+
+        if (trackBtnX <= 5) { trackBtnX = 5; trackBtnVx *= -1; }
+        else if (trackBtnX + btnW >= crtW - 5) { trackBtnX = crtW - 5 - btnW; trackBtnVx *= -1; }
+
+        if (trackBtnY <= 5) { trackBtnY = 5; trackBtnVy *= -1; }
+        else if (trackBtnY + btnH >= crtH - 5) { trackBtnY = crtH - 5 - btnH; trackBtnVy *= -1; }
+
+        btn.style.left = `${trackBtnX}px`;
+        btn.style.top = `${trackBtnY}px`;
     }
 
     function hideTrackHoursBtn() {
@@ -2726,7 +2822,7 @@
             if (el) el.remove();
             if (giveArchiveBoost) {
                 archiveBoostTimer = 200; // +25% boost for 10 seconds
-                createConsequencePopup("PROCESS COMPLETE!", "Render speed increased 25% for 10 seconds!");
+                createConsequencePopup("PROCESS COMPLETE!", "+25% for 10 seconds!");
             }
         }, seconds * 1000);
     }
@@ -2777,13 +2873,27 @@
         closePopup(id);
     }
 
-    function createConsequencePopup(title, italicSubtext) {
+    function createConsequencePopup(title, italicSubtext, customColor = null) {
         playSound('virus');
         const layer = document.getElementById('popup-layer');
         const popup = document.createElement('div');
         popup.className = 'popup-window popup-center';
         const id = 'conseq_' + Date.now();
         popup.id = id;
+
+        let subtextColorStyle = '';
+        if (customColor) {
+            subtextColorStyle = `style="color: ${customColor}; font-style: normal;"`;
+        } else if (italicSubtext) {
+            const lower = italicSubtext.toLowerCase();
+            if (lower.includes('increased') || lower.includes('boosted') || lower.includes('cleared') || lower.includes('approved') || lower.includes('complete')) {
+                subtextColorStyle = 'style="color: #00e676; font-style: normal;"';
+            } else if (lower.includes('decreased') || lower.includes('paused') || lower.includes('error') || lower.includes('disappointed')) {
+                subtextColorStyle = 'style="color: #ff5252; font-style: normal;"';
+            } else {
+                subtextColorStyle = 'style="color: #ffb74d; font-style: normal;"';
+            }
+        }
 
         popup.innerHTML = `
             <div class="popup-header">
@@ -2792,7 +2902,7 @@
             </div>
             <div class="popup-body">
                 <div style="font-weight:bold;">${title}</div>
-                ${italicSubtext ? `<span class="popup-subtext">${italicSubtext}</span>` : ''}
+                ${italicSubtext ? `<span class="popup-subtext" ${subtextColorStyle}>${italicSubtext}</span>` : ''}
                 <button class="popup-btn" onclick="closePopup('${id}')">OK</button>
             </div>
         `;
@@ -2808,14 +2918,14 @@
     }
 
     function spawnRamPopup() {
-        const titles = ["DOWNLOAD 64GB RAM FOR FREE", "★ FREE RAM UPGRADE ★", "BE THE GOD OF RAM"];
+        const titles = ["DOWNLOAD 64GB RAM", "★ FREE RAM UPGRADE ★", "BE THE GOD OF RAM"];
         const msgs = ["This will super mega speed up your renders!", "Everybody is gonna love you!", "Double your render speed in 1-Click!"];
         const idx = Math.floor(Math.random() * titles.length);
         createGenericPopup(titles[idx], msgs[idx], 'ram_scam', "This is a complete lie.");
     }
 
     function spawnRenderNodePopup() {
-        createGenericPopup("RENDER NODE AVAILABLE", "Node #04 Available! Connect in 5s (+10% Permanent Speed)?", 'node');
+        createGenericPopup("RENDER NODE AVAILABLE", "Connect to render node to increase render speed", 'node');
     }
 
     function spawnAntiVirusPopup() {
@@ -2828,15 +2938,18 @@
         const crtH = crt ? crt.clientHeight : 260;
 
         const popupW = 210;
-        const popupH = 130;
+        const popupH = 155; // Account for full popup height including headers, buttons & subtexts
+        const pad = 12;      // Safe frame padding inside CRT boundaries
 
-        const maxX = Math.max(10, crtW - popupW - 10);
-        const maxY = Math.max(10, crtH - popupH - 10);
+        const minX = pad;
+        const minY = pad;
+        const maxX = Math.max(minX, crtW - popupW - pad);
+        const maxY = Math.max(minY, crtH - popupH - pad);
 
-        // Level 4: Cosmetic chaos, random placement anywhere
+        // Level 4: Cosmetic chaos, random placement anywhere within safe frame
         if (currentLevel === 4) {
-            const posX = Math.floor(Math.random() * maxX) + 10;
-            const posY = Math.floor(Math.random() * maxY) + 10;
+            const posX = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
+            const posY = Math.floor(Math.random() * (maxY - minY + 1)) + minY;
             return { x: posX, y: posY };
         }
 
@@ -2851,12 +2964,12 @@
             };
         });
 
-        let bestX = Math.floor(Math.random() * maxX) + 10;
-        let bestY = Math.floor(Math.random() * maxY) + 10;
+        let bestX = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
+        let bestY = Math.floor(Math.random() * (maxY - minY + 1)) + minY;
 
         for (let i = 0; i < 40; i++) {
-            const candX = Math.floor(Math.random() * maxX) + 10;
-            const candY = Math.floor(Math.random() * maxY) + 10;
+            const candX = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
+            const candY = Math.floor(Math.random() * (maxY - minY + 1)) + minY;
 
             const candRect = {
                 left: candX,
@@ -3146,6 +3259,11 @@
             document.getElementById('max-crash-title-text').innerText = "MALWARE OVERLOAD: FILES HELD HOSTAGE!";
             document.getElementById('max-fail-reason').innerText = reason;
             document.getElementById('max-crash-details-text').innerHTML = "STATUS: C: DRIVE VOTING MAJORITY REACHED (5/5)<br>EMERGENCY BOARD MEETING: CONVENED<br>VERDICT: OPERATING SYSTEM LIQUIDATED";
+        } else if (type === 'miranda_choke') {
+            document.getElementById('max-crash-header-title').innerText = "CRITICAL REVISION FAILURE - 99%";
+            document.getElementById('max-crash-title-text').innerText = "THE ULTIMATE CHOKE: 99% COMPLETE";
+            document.getElementById('max-fail-reason').innerText = reason;
+            document.getElementById('max-crash-details-text').innerHTML = "STATUS: REVISION PURGATORY ETERNITY<br>REASON: FAILED AT THE FINISH LINE<br>CLIENT: MIRANDA ROMER";
         } else {
             document.getElementById('max-crash-header-title').innerText = "3DSMAX.EXE - APPLICATION ERROR";
             document.getElementById('max-crash-title-text').innerText = "3DS MAX HAS CRASHED";
@@ -3182,8 +3300,8 @@
     // ==================== MIRANDA BOSS MINIGAME LOGIC ====================
 
     // Configs
-    const TOTAL_COMMENTS = 22;      
-    const GAME_DURATION_SEC = 45;   
+    const TOTAL_COMMENTS = 25;      
+    const GAME_DURATION_SEC = 35;   
 
     let commentsLeft = TOTAL_COMMENTS;
     let commentTimerSec = GAME_DURATION_SEC;
@@ -3389,6 +3507,14 @@
                 e.stopPropagation();
                 checkOffComment(i);
             };
+            card.onpointerdown = (e) => {
+                e.stopPropagation();
+                checkOffComment(i);
+            };
+            card.onmousedown = (e) => {
+                e.stopPropagation();
+                checkOffComment(i);
+            };
 
             cardContainer.appendChild(card);
 
@@ -3558,7 +3684,7 @@
         document.getElementById('miranda-defeat-overlay').style.display = 'none';
         document.getElementById('slowmo-dim-overlay').style.display = 'none';
         
-        gameOver("You failed to satisfy Miranda. With a single shake of her head, she opened a portal that sent you to Revision Purgatory for eternity.", "max_crash");
+        gameOver("The entire world was depending on this deliverable, and yet you managed to fail at the finish line.", "miranda_choke");
     }
 
     // Minigame Boss Audio Engine
